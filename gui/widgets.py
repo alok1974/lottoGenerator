@@ -1,91 +1,17 @@
-import sys
-import os
-import functools
-from Tkinter import Tk
 from PyQt4 import QtCore, QtGui
-
 from logger import Logger
 
-
-APP_STYLE = ("WindowsVista" if sys.platform.startswith('win')  else "Plastique")
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-TITLE = "ALOK'S LOTTO GENERATOR"
-LOTTO_TYPE = ['Lotto Max', 'Lotto 649']
 NO_PATH_STRING = '        < using no path >'
 NO_NUM_STRING = '    < no numbers selected >'
-
-class StyleSheet(object):
-    STYLESHEET_OPTIONS = ['dark', 'soft', 'maya', 'nuke',]
-
-    def __init__(self, *args, **kwargs):
-        super(StyleSheet, self).__init__(*args, **kwargs)
-        self.prefFile = os.path.join(ROOT_DIR, 'prefs', 'currStyle')
-        self.style = ''
-
-    def _createPrefs(self):
-        with open(self.prefFile, 'w') as f:
-            f.write('theme:')
-
-    def _readPrefs(self):
-        if not os.path.exists(self.prefFile):
-            self._createPrefs()
-
-        with open(self.prefFile, 'r') as f:
-            s = f.readlines()
-
-        self.style= s[0].split(':')[1]
-
-        return self.style
-
-    def _writePrefs(self, pref=''):
-        if not os.path.exists(self.prefFile):
-            self._createPrefs()
-
-        with open(self.prefFile, 'w') as f:
-            f.write('theme:%s:' % pref)
-
-    def setColor(self, widget, app=None, init=False):
-        self._readPrefs()
-
-        if not self.style:
-            if app:
-                pass
-                app.setStyle(QtGui.QStyleFactory.create(APP_STYLE))
-
-            widget.setStyleSheet("")
-
-            return
-
-        if self.style not in self.STYLESHEET_OPTIONS:
-            raise Exception('"%s" type of stylesheet option does not exist !!'
-                            % self.style)
-
-        p = os.path.join(ROOT_DIR, 'styleSheets', str(self.style))
-
-        if not os.path.exists(p):
-            raise Exception('Style Path - %s does not exist !!' % p)
-
-        s = ''
-        with open(p, 'r') as f:
-            s = f.read()
-        #
-        #imageDir = str(os.path.abspath(os.path.join(ROOT_DIR, 'icons')))
-        #s = s.replace('FULLPATH', imageDir)
-
-        if app:
-            app.setStyle(QtGui.QStyleFactory.create("Plastique"))
-
-        widget.setStyleSheet(s)
+RADIO_BTN = ['Last Six Months', 'All Months', 'Both']
 
 class MainWidgetUI(QtGui.QWidget):
     def __init__(self, *args, **kwargs):
         super(MainWidgetUI, self).__init__(*args, **kwargs)
         self._checkBoxMap = {}
+        self._radioBtnMap = {}
         self._hLineMap = {}
         self._vLineMap = {}
-
-        StyleSheet().setColor(self)
-
 
     def _setupUI(self):
 
@@ -94,8 +20,7 @@ class MainWidgetUI(QtGui.QWidget):
         # Labels
         self._lottoTypeLabel = QtGui.QLabel('Select Lotto Type')
         self._nbTicketsLabel = QtGui.QLabel('Number of Tickets to Generate')
-        self._displayLabel = QtGui.QLabel('Output \
-                                          ')
+        self._displayLabel = QtGui.QLabel('Generated Results')
         self._scrapTypeLabel = QtGui.QLabel('Generate based on results for')
         self._forcedNumbersLabel = QtGui.QLabel('Select Numbers to force')
         self._forcedNumbersDisplayLabel = QtGui.QLabel('Using these forced numbers')
@@ -169,8 +94,12 @@ class MainWidgetUI(QtGui.QWidget):
         #-----------------------------------------------------------------------
 
         # Buttons
-        self._generateBtn = QtGui.QPushButton('Generate')
+        self._generateBtn = QtGui.QPushButton('Generate Draw')
         self._generateBtn.setStyleSheet("QPushButton {background-color : \
+                                        rgb(110, 122, 74);}")
+
+        self._resetBtn = QtGui.QPushButton('Reset Options')
+        self._resetBtn.setStyleSheet("QPushButton {background-color : \
                                         rgb(110, 122, 74);}")
 
         self._cancelBtn = QtGui.QPushButton('Cancel')
@@ -198,20 +127,21 @@ class MainWidgetUI(QtGui.QWidget):
         #-----------------------------------------------------------------------
 
         # Radio Buttons
-        self._sixMonthRadioBtn = QtGui.QRadioButton('Last Six Months')
-        self._sixMonthRadioBtn.setStyleSheet("QRadioButton {/*background-color :\
-                                             rgb(69, 98, 104)*/; font-size: 16px;}")
-        self._sixMonthRadioBtn.setChecked(True)
+        for index, t in enumerate(RADIO_BTN):
+            _radioBtn =  QtGui.QRadioButton(t)
+            _radioBtn.setStyleSheet("QRadioButton {/*background-color :\
+                                                         rgb(69, 98, 104)*/; \
+                                                         font-size: 16px;}")
 
-        self._allMonthRadioBtn = QtGui.QRadioButton('All Months')
-        self._allMonthRadioBtn.setStyleSheet("QRadioButton {/*background-color :\
-                                             rgb(69, 98, 104)*/; font-size: 16px;}")
+            if index==0:
+                _radioBtn.setChecked(True)
 
-        self._bothRadioBtn = QtGui.QRadioButton('Both')
-        self._bothRadioBtn.setStyleSheet("QRadioButton {/*background-color :\
-                                         rgb(69, 98, 104)*/; font-size: 16px;}")
+            self._radioBtnMap[index] = _radioBtn
 
-#-------------------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+
+        #-----------------------------------------------------------------------
+
         # Grid Layout
         self._grid = QtGui.QGridLayout()
         self._grid.setSpacing(15)
@@ -238,9 +168,9 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addWidget(self._scrapTypeLabel, 1, 2)
 
         self._vRadioLayout = QtGui.QVBoxLayout()
-        self._vRadioLayout.addWidget(self._sixMonthRadioBtn)
-        self._vRadioLayout.addWidget(self._allMonthRadioBtn)
-        self._vRadioLayout.addWidget(self._bothRadioBtn)
+
+        for i in range(3):
+            self._vRadioLayout.addWidget(self._radioBtnMap[i])
 
         self._grid.addLayout(self._vRadioLayout, 2, 2)
         self._grid.addWidget(self._hLineMap[4], 3, 2)
@@ -310,18 +240,14 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addWidget(self._displayTextEdit, 2, 6, 3, 1)
         self._grid.addLayout(self._hLayout, 5, 6)
         self._grid.addWidget(self._hLineMap[9], 6, 6)
-        self._grid.addWidget(self._generateBtn, 7, 6)
+
+        self._hBtnLayout = QtGui.QHBoxLayout()
+        self._hBtnLayout.addWidget(self._generateBtn)
+        self._hBtnLayout.addWidget(self._resetBtn)
+        self._grid.addLayout(self._hBtnLayout, 7, 6)
         self._grid.addWidget(self._cancelBtn, 8, 6)
 
         #-----------------------------------------------------------------------
 
         self._mainLayout = QtGui.QVBoxLayout(self)
         self._mainLayout.addLayout(self._grid)
-
-if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
-    am = MainWidgetUI()
-    am._setupUI()
-    am.show()
-    am.raise_()
-    app.exec_()
