@@ -4,7 +4,8 @@
 
 prefs/currStyle
 prefs/recentFiles
-srcPsd/*.*
+
+*.psd
 
 # C extensions
 *.so
