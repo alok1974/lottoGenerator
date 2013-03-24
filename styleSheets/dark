@@ -109,11 +109,11 @@ QComboBox:hover, QDoubleSpinBox:hover, QTimeEdit:hover, QDateEdit:hover, QDateTi
 QSpinBox:hover
                                                 {border-color: solid rgb(61,123,205);}
 
-QRadioButton::indicator::checked                {background-color: rgb(20, 20, 20);}
-QRadioButton::indicator::unchecked              {background-color: rgb(200, 200, 200);}
+QRadioButton::indicator::checked                {background-color: rgb(200, 200, 20);}
+QRadioButton::indicator::unchecked              {background-color: rgb(127, 127, 127);}
 
-QCheckBox::indicator::checked                   {background-color: rgb(20, 20, 20);}
-QCheckBox::indicator::unchecked	                {background-color: rgb(200, 200, 200);}
+QCheckBox::indicator::checked                   {background-color: rgb(20, 50, 200);}
+QCheckBox::indicator::unchecked	                {background-color: rgb(127, 127, 127);}
 
 
 QScrollBar                                      {color: solid black}
@@ -331,4 +331,6 @@ QDial                                           {background-color: rgb(0,0,0);}
 
 QDial::handle                                   {background-color: rgb(0,0,0);}
 
-QWidget	                                        {selection-background-color: rgb(61,123,205);}
+QWidget	                                        {selection-background-color: rgb(61,123,205);
+                                                 background: rgb(50,45,43);
+                                                }
