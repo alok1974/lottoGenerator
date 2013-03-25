@@ -12,7 +12,9 @@ from widgets import MainWidgetUI, NO_NUM_STRING, NO_PATH_STRING
 from styleSheet import StyleSheet
 from msgHandler import _pop
 from logger import Logger
-from alg.generate import generateTickets
+from alg.alg import MainAlgorithm
+
+MainAlgorithm.runAlg()
 
 
 TITLE = "ALOK'S LOTTO GENERATOR"
