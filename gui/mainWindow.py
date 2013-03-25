@@ -1,14 +1,19 @@
-import sys
 import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)), '..')))
+
 import functools
 from Tkinter import Tk
 from PyQt4 import QtCore, QtGui
 
+
 from widgets import MainWidgetUI, NO_NUM_STRING, NO_PATH_STRING
 from styleSheet import StyleSheet
 from msgHandler import _pop
-
 from logger import Logger
+from alg.generate import generateTickets
+
 
 TITLE = "ALOK'S LOTTO GENERATOR"
 LOTTO_TYPE = ['Lotto 649', 'Lotto MAX']
