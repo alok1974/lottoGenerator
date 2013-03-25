@@ -93,7 +93,10 @@ class MainWidget(MainWidgetUI):
             _pop(self, 1)
             self._lottoTypeComboBox.blockSignals(True) # blocking signals so the func does not go in recursion
             self._lottoTypeComboBox.setCurrentIndex(1)
+            self._isLottoMax = bool(1)
             self._lottoTypeComboBox.blockSignals(False)
+
+            return
 
         self._isLottoMax = bool(item)
 
