@@ -1,7 +1,10 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)), '..')))
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)), '..'))
+
+if ROOT_DIR not in sys.path:
+    sys.path.append()
 
 import functools
 from Tkinter import Tk
@@ -118,7 +121,7 @@ class MainWidget(MainWidgetUI):
         fg.setOptions(QtGui.QFileDialog.ShowDirsOnly)
         fg.setOption(QtGui.QFileDialog.ShowDirsOnly)
         f = str(fg.getExistingDirectory(self, 'Select Output Folder',
-                                        os.path.dirname(os.path.abspath(__file__)),
+                                        os.path.abspath(os.path.join(ROOT_DIR, 'output')),
                                         QtGui.QFileDialog.ShowDirsOnly))
 
         if not f:
