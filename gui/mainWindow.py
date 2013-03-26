@@ -14,9 +14,6 @@ from msgHandler import _pop
 from logger import Logger
 from alg.alg import MainAlgorithm
 
-MainAlgorithm.runAlg()
-
-
 TITLE = "ALOK'S LOTTO GENERATOR"
 LOTTO_TYPE = ['Lotto 649', 'Lotto MAX']
 MAX_NUMBERS = (6, 7)
