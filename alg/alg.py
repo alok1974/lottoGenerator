@@ -1,20 +1,27 @@
-# Algorithm to generate Canada Lotto Tickets
-# Author: Alok Gandhi
+###########################################################################################
+###########################################################################################
+##                                                                                       ##
+##  Alok's Lotto Generator V 1.0 (c) 2013 Alok Gandhi (alok.gandhi2002@gmail.com)        ##
+##                                                                                       ##
+##                                                                                       ##
+##  This file is part of Alok's Lotto Generator.                                         ##
+##                                                                                       ##
+##  This software is free software: you can redistribute it and/or modify                ##
+##  it under the terms of the GNU General Public License, Version 3, 29 June 2007        ##
+##  as published by the Free Software Foundation,                                        ##
+##                                                                                       ##
+##  This software is distributed in the hope that it will be useful,                     ##
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of                       ##
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        ##
+##  GNU General Public License for more details.                                         ##
+##                                                                                       ##
+##  You should have received a copy of the GNU General Public License                    ##
+##  along with this software.  If not, see <http://www.gnu.org/licenses/>.               ##
+##                                                                                       ##
+###########################################################################################
+###########################################################################################
 
-#######################################################################
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#######################################################################
+
 import os
 import time
 import random
@@ -35,12 +42,12 @@ class MainAlgorithm(Settings):
         self.validation = False
         self.gen = None
         self.nbSevenJumps = 0
-        
+
     def _getDraw(self, wr):
         winningDraw = []
 
         nbNumsToget = self.numbersInDraw - self.nbFromForcedRandom
-    
+
         if self.useAtmosphericNoise:
             winningDraw.extend(wr.getNaturalRandom(min=1, max=49, nbNumbers=nbNumsToget))
         else:
@@ -50,12 +57,12 @@ class MainAlgorithm(Settings):
                         num = wr.getNonWeightedRandom()
                     else:
                         num = wr.getRandomNumber()
-                    
+
                     if num not in winningDraw:
                         break
-    
+
                 winningDraw.append(num)
-                
+
         for i in range(self.nbFromForcedRandom):
 
             randomIndex = random.randint(0, len(self.forcedNumbers) - 1)
@@ -68,26 +75,26 @@ class MainAlgorithm(Settings):
                 random.shuffle(self.forcedNumbers)
                 forcedNumber = self.forcedNumbers[randomIndex]
                 ctr += 1
-                
+
             winningDraw.append(forcedNumber)
-    
+
         return winningDraw
-    
+
     @staticmethod
     def _getSevenJumps(inDraw):
         nbSevenJumps = 0
         rows = [([(i + 1) + (7 * j) for j in range(7)]) for i in range(7)]
         rowsJumpData = dict([(i + 1, 0)for i in range(7)])
-        
+
         for n in inDraw:
             for index, r in enumerate(rows):
                 if n in r:
                     rowsJumpData[index + 1] += 1
-                    
+
         for k,v in rowsJumpData.iteritems():
             if v > 1:
                 nbSevenJumps += 1
-        
+
         return nbSevenJumps
 
     def _setDrawAnatomy(self):
@@ -112,20 +119,20 @@ class MainAlgorithm(Settings):
         rule2 = self.nbEven in NB_EVENS
         rule3 = self.nbLow in NB_LOWS
         rule4 = DSR_S <= self.dsm <= DSR_E
-        
+
         if self.doSevenJumps:
             rule5 = self.nbSevenJumps>0
         else:
             rule5 = self.nbSevenJumps==0
-            
+
         self.validation =  rule1 and rule2 and rule5
-    
+
     def runAlg(self):
         lottoData = None
         if not self.useAtmosphericNoise:
             ld = ScrapLottoData(url=self.url, scrapType=self.scrapType)
             lottoData = ld.getLottoData()
-            
+
         wr = WeightedRandomGenerator(lottoData)
 
         allGen = []
@@ -137,18 +144,18 @@ class MainAlgorithm(Settings):
                 self._validateDraw()
 
             self.validation = False
-                
+
             if self.winningDraw not in allGen:
                 allGen.append(self.winningDraw)
-                
+
         self.gen = allGen
         self.output()
-        
+
     def output(self):
         op = Output(isMax=self.isMax, rowsInATicket=self.rowsInATicket, logAnatomy=self.logAnatomy,
                     forcedNumbers=self.forcedNumbers, extraFileName=self.extraFileName)
         self.outStr, self.outStrDisp = op._makeOutPutString(self.gen)
-        
+
         if self.display:
             print self.outStrDisp
 
@@ -156,7 +163,7 @@ class MainAlgorithm(Settings):
             outDir = os.path.join(self.writeDirPath, "output")
             if not os.path.exists(outDir):
                 os.mkdir(outDir)
-           
+
             p = os.path.join(outDir, op._getFileName())
             f = open(p, 'w')
             f.write(self.outStr)
@@ -167,6 +174,3 @@ if __name__ == '__main__':
     ma = MainAlgorithm(lottoIsMax=False, nbTickets=2, write=True)
     ma.runAlg()
     print 'ran in %s seconds . . . ' % (time.time() - s)
-    
-
-    
