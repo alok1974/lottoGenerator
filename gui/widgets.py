@@ -185,6 +185,7 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addWidget(self._outPutDirLineEdit, 7, 0)
 
         self._hFolderLayout = QtGui.QHBoxLayout()
+        #self._hFolderLayout.addStretch(100)
         self._hFolderLayout.addWidget(self._selectOutPathBtn)
         self._hFolderLayout.addWidget(self._clearOutPathBtn)
 
