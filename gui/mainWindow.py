@@ -27,7 +27,7 @@ import sys
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)), '..'))
 
 if ROOT_DIR not in sys.path:
-    sys.path.append()
+    sys.path.append(ROOT_DIR)
 
 import functools
 from Tkinter import Tk
@@ -38,7 +38,7 @@ from widgets import MainWidgetUI, NO_NUM_STRING, NO_PATH_STRING
 from styleSheet import StyleSheet
 from msgHandler import _pop
 from logger import Logger
-from alg.alg import MainAlgorithm
+from algorithm.mainAlgorithm import MainAlgorithm
 
 TITLE = "ALOK'S LOTTO GENERATOR"
 LOTTO_TYPE = ['Lotto 649', 'Lotto MAX']
