@@ -36,7 +36,7 @@ from PyQt4 import QtCore, QtGui
 
 from widgets import MainWidgetUI, NO_NUM_STRING, NO_PATH_STRING
 from styleSheet import StyleSheet
-from msgHandler import _pop
+import msgHandler
 from logger import Logger
 from algorithm.mainAlgorithm import MainAlgorithm
 
@@ -115,7 +115,7 @@ class MainWidget(MainWidgetUI):
 
     def _lottoTypeComboBoxOnClicked(self, item):
         if item==0 and len(self._forcedNumbers)==7:
-            _pop(self, 1)
+            msgHandler._pop(self, 1)
             self._lottoTypeComboBox.blockSignals(True) # blocking signals so the func does not go in recursion
             self._lottoTypeComboBox.setCurrentIndex(1)
             self._isLottoMax = bool(1)
@@ -183,7 +183,7 @@ class MainWidget(MainWidgetUI):
         lottoType = LOTTO_TYPE[int(self._isLottoMax)]
 
         if nbForcedNumbers > maxAllowed:
-            _pop(self, 2, extraArgs=[maxAllowed, lottoType])
+            msgHandler._pop(self, 2, extraArgs=[maxAllowed, lottoType])
             item.blockSignals(True) # blocking signals so the func does not go in recursion
             item.setCheckState(0)
             self._forcedNumbers.remove(nbItem)

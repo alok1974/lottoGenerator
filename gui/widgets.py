@@ -54,12 +54,12 @@ class MainWidgetUI(QtGui.QWidget):
 
         # Edits and ComboBoxes
         self._lottoTypeComboBox = QtGui.QComboBox()
-        self._lottoTypeComboBox.setMinimumSize(200, 150)
+        self._lottoTypeComboBox.setMinimumSize(200, 50)
         self._lottoTypeComboBox.setStyleSheet("QComboBox {background-color : \
                                               rgb(76, 78, 101); font-size: 30px;}")
 
         self._nbTicketsSpinBox = QtGui.QSpinBox()
-        self._nbTicketsSpinBox.setMinimumSize(200, 150)
+        self._nbTicketsSpinBox.setMinimumSize(200, 50)
         self._nbTicketsSpinBox.setStyleSheet("QSpinBox {background-color : \
                                              rgb(69, 98, 104); font-size: 30px;}")
 
@@ -175,10 +175,21 @@ class MainWidgetUI(QtGui.QWidget):
         # Column 01
         self._grid.addWidget(self._hLineMap[1], 0, 0)
         self._grid.addWidget(self._lottoTypeLabel, 1, 0)
-        self._grid.addWidget(self._lottoTypeComboBox, 2, 0, 2, 1)
-        self._grid.addWidget(self._hLineMap[2], 4, 0)
-        self._grid.addWidget(self._nbTicketsLabel, 5, 0)
-        self._grid.addWidget(self._nbTicketsSpinBox, 6, 0, 3, 1)
+        self._grid.addWidget(self._lottoTypeComboBox, 2, 0, 1, 1)
+
+        self._grid.addWidget(self._nbTicketsLabel, 3, 0)
+        self._grid.addWidget(self._nbTicketsSpinBox, 4, 0, 1, 1)
+
+        self._grid.addWidget(self._hLineMap[2], 5, 0)
+        self._grid.addWidget(self._useFolderLabel, 6, 0)
+        self._grid.addWidget(self._outPutDirLineEdit, 7, 0)
+
+        self._hFolderLayout = QtGui.QHBoxLayout()
+        self._hFolderLayout.addWidget(self._selectOutPathBtn)
+        self._hFolderLayout.addWidget(self._clearOutPathBtn)
+
+        self._grid.addLayout(self._hFolderLayout, 8, 0)
+
         #-----------------------------------------------------------------------
 
         # column 02
