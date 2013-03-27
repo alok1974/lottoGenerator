@@ -35,6 +35,7 @@ class MainWidgetUI(QtGui.QWidget):
         self._radioBtnMap = {}
         self._hLineMap = {}
         self._vLineMap = {}
+        self._checkBoxMap = {}
 
     def _setupUI(self):
 
@@ -96,6 +97,9 @@ class MainWidgetUI(QtGui.QWidget):
 
         self._writeToFileCheckBox = QtGui.QCheckBox("Write Results to File")
         self._writeToFileCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+
+        self._logAnatomyCheckBox = QtGui.QCheckBox("Log Details in Results")
+        self._logAnatomyCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
 
         #-----------------------------------------------------------------------
 
