@@ -215,16 +215,7 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addWidget(self._hLineMap[4], 3, 2)
         self._grid.addWidget(self._sevenJumpsCheckBox, 4, 2)
         self._grid.addWidget(self._hLineMap[5], 5, 2)
-        self._grid.addWidget(self._useFolderLabel, 6, 2)
-        self._grid.addWidget(self._outPutDirLineEdit, 7, 2)
-
-        self._hFolderLayout = QtGui.QHBoxLayout()
-        self._hFolderLayout.addWidget(self._selectOutPathBtn)
-        self._hFolderLayout.addWidget(self._clearOutPathBtn)
-
-        self._grid.addLayout(self._hFolderLayout, 8, 2)
-
-
+    
         #-----------------------------------------------------------------------
 
         # column 04
