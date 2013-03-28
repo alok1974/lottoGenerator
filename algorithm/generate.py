@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #######################################################################
-from alg import MainAlgorithm
+from mainAlgorithm import MainAlgorithm
 
 def generateTickets():
     lottoIsMax = False
@@ -38,8 +38,8 @@ def generateTickets():
                         logAnatomy=logAnatomy,
                         nbTickets=nbTickets,
                         doSevenJumps=doSevenJumps,
-                        #forcedNumbers=forcedNumbers,
-                        #nbFromForcedRandom=nbFromForcedRandom,
+                        forcedNumbers=forcedNumbers,
+                        nbFromForcedRandom=nbFromForcedRandom,
                        )
     ma.runAlg()
 
