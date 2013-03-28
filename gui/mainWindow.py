@@ -79,6 +79,14 @@ class MainWidget(MainWidgetUI):
         self._nbTicketsSpinBox.setRange(1, 1000)
         self._nbTicketsSpinBox.setValue(1)
 
+        self._nbFromForcedSpinBox.setRange(0, len(self._forcedNumbers))
+        self._nbFromForcedSpinBox.setValue(len(self._forcedNumbers))
+
+
+        self._radioBtnMap[0].setChecked(True)
+        self._noNumberCheckBox.setChecked(True)
+        self._logAnatomyCheckBox.setChecked(True)
+
         self._updateForcedNumberLineEdit()
 
         self._connectSignals()
@@ -167,6 +175,8 @@ class MainWidget(MainWidgetUI):
 
         self._forcedNumbers = []
         self._updateForcedNumberLineEdit()
+        self._nbFromForcedSpinBox.setRange(0, 0)
+        self._nbFromForcedSpinBox.setValue(0)
 
     def _connectCheckBox(self):
         for index, checkBox in self._checkBoxMap.iteritems():
@@ -192,6 +202,8 @@ class MainWidget(MainWidgetUI):
 
         self._updateForcedNumberLineEdit()
         self._noNumberCheckBox.setCheckState(0)
+        self._nbFromForcedSpinBox.setRange(0, len(self._forcedNumbers))
+        self._nbFromForcedSpinBox.setValue(len(self._forcedNumbers))
 
     def _clearTextBtnOnClicked(self):
         self._displayTextEdit.clear()

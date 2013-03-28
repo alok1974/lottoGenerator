@@ -43,12 +43,13 @@ class MainWidgetUI(QtGui.QWidget):
 
         # Labels
         self._lottoTypeLabel = QtGui.QLabel('Select Lotto Type')
-        self._nbTicketsLabel = QtGui.QLabel('Number of Tickets to Generate')
+        self._nbTicketsLabel = QtGui.QLabel('Number of Tickets \nto Generate')
         self._displayLabel = QtGui.QLabel('Generated Results')
-        self._scrapTypeLabel = QtGui.QLabel('Generate based on results for')
+        self._scrapTypeLabel = QtGui.QLabel('Generate based \non results for')
         self._forcedNumbersLabel = QtGui.QLabel('Select Numbers to force')
-        self._forcedNumbersDisplayLabel = QtGui.QLabel('Using these forced numbers')
-        self._useFolderLabel = QtGui.QLabel('Output folder for writing results')
+        self._forcedNumbersDisplayLabel = QtGui.QLabel('Forced numbers')
+        self._useFolderLabel = QtGui.QLabel('Output folder for \nwriting results')
+        self._nbFromForcedLabel = QtGui.QLabel('How many numbers to use \nfrom forced numbers ?')
 
 
         #-----------------------------------------------------------------------
@@ -63,6 +64,12 @@ class MainWidgetUI(QtGui.QWidget):
         self._nbTicketsSpinBox.setMinimumSize(200, 50)
         self._nbTicketsSpinBox.setStyleSheet("QSpinBox {background-color : \
                                              rgb(69, 98, 104); font-size: 30px;}")
+
+
+        self._nbFromForcedSpinBox = QtGui.QSpinBox()
+        self._nbFromForcedSpinBox.setMinimumSize(200, 50)
+        self._nbFromForcedSpinBox.setStyleSheet("QSpinBox {background-color : \
+                                             rgb(104, 99, 62); font-size: 30px;}")
 
         self._displayTextEdit = QtGui.QTextEdit()
         self._displayTextEdit.setReadOnly(True)
@@ -121,7 +128,7 @@ class MainWidgetUI(QtGui.QWidget):
         #-----------------------------------------------------------------------
 
         # Buttons
-        self._generateBtn = QtGui.QPushButton('Generate Draw')
+        self._generateBtn = QtGui.QPushButton('Generate')
         self._generateBtn.setStyleSheet("QPushButton {background-color : \
                                         rgb(110, 122, 74);}")
 
@@ -151,6 +158,14 @@ class MainWidgetUI(QtGui.QWidget):
         self._selectOutPathBtn.setStyleSheet("QPushButton {background-color :\
                                              rgb(89, 65, 62);}")
 
+        self._setSumsBtn = QtGui.QPushButton('Set Sums')
+        self._setSumsBtn.setStyleSheet("QPushButton {background-color :\
+                                             rgb(89, 76, 62);}")
+
+        self._setRulesBtn = QtGui.QPushButton('Set Rules')
+        self._setRulesBtn.setStyleSheet("QPushButton {background-color :\
+                                             rgb(68, 89, 62);}")
+
         #-----------------------------------------------------------------------
 
         # Radio Buttons
@@ -159,10 +174,6 @@ class MainWidgetUI(QtGui.QWidget):
             _radioBtn.setStyleSheet("QRadioButton {/*background-color :\
                                                          rgb(69, 98, 104)*/; \
                                                          font-size: 16px;}")
-
-            if index==0:
-                _radioBtn.setChecked(True)
-
             self._radioBtnMap[index] = _radioBtn
 
         #-----------------------------------------------------------------------
@@ -214,8 +225,11 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addLayout(self._vRadioLayout, 2, 2)
         self._grid.addWidget(self._hLineMap[4], 3, 2)
         self._grid.addWidget(self._sevenJumpsCheckBox, 4, 2)
-        self._grid.addWidget(self._hLineMap[5], 5, 2)
-    
+        self._grid.addWidget(self._logAnatomyCheckBox, 5, 2)
+        self._grid.addWidget(self._hLineMap[5], 6, 2)
+        self._grid.addWidget(self._setSumsBtn, 7, 2)
+        self._grid.addWidget(self._setRulesBtn, 8, 2)
+
         #-----------------------------------------------------------------------
 
         # column 04
@@ -234,7 +248,6 @@ class MainWidgetUI(QtGui.QWidget):
         self._noNumberCheckBox.setStyleSheet("QCheckBox::indicator::checked \
                                              {background-color: rgb(200, 20, 20);}")
 
-        self._noNumberCheckBox.setChecked(True)
         self._numberGrid.addWidget(self._noNumberCheckBox, 0, 0)
         for i in range(10):
             for j in range(5):
@@ -249,9 +262,11 @@ class MainWidgetUI(QtGui.QWidget):
                 self._numberGrid.addWidget(self._nbCheckBox, i, j)
 
         self._grid.addLayout(self._numberGrid, 2, 4, 4, 1)
-        self._grid.addWidget(self._hLineMap[7], 6, 4)
-        self._grid.addWidget(self._forcedNumbersDisplayLabel, 7, 4)
-        self._grid.addWidget(self._forcedNumbersLineEdit, 8, 4)
+        #self._grid.addWidget(self._forcedNumbersDisplayLabel, 5, 4)
+        self._grid.addWidget(self._forcedNumbersLineEdit, 6, 4)
+        #self._grid.addWidget(self._hLineMap[7], 6, 4)
+        self._grid.addWidget(self._nbFromForcedLabel, 7, 4)
+        self._grid.addWidget(self._nbFromForcedSpinBox, 8, 4)
 
         #-----------------------------------------------------------------------
 
@@ -271,10 +286,11 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addLayout(self._hLayout, 5, 6)
         self._grid.addWidget(self._hLineMap[9], 6, 6)
 
-        self._hBtnLayout = QtGui.QHBoxLayout()
-        self._hBtnLayout.addWidget(self._generateBtn)
-        self._hBtnLayout.addWidget(self._resetBtn)
-        self._grid.addLayout(self._hBtnLayout, 7, 6)
+        #self._hBtnLayout = QtGui.QHBoxLayout()
+        #self._hBtnLayout.addWidget(self._generateBtn)
+        #self._hBtnLayout.addWidget(self._resetBtn)
+        #self._grid.addLayout(self._hBtnLayout, 7, 6)
+        self._grid.addWidget(self._generateBtn, 7, 6)
         self._grid.addWidget(self._cancelBtn, 8, 6)
 
         #-----------------------------------------------------------------------
