@@ -34,7 +34,7 @@ from Tkinter import Tk
 from PyQt4 import QtCore, QtGui
 
 
-from widgets import MainWidgetUI, NO_NUM_STRING, NO_PATH_STRING
+from widgets import MainWidgetUI, SetSumsWidget, NO_NUM_STRING, NO_PATH_STRING
 from styleSheet import StyleSheet
 import msgHandler
 from logger import Logger
@@ -62,6 +62,8 @@ class MainWidget(MainWidgetUI):
         self._nbTickets = 1
         self._doSevenJumps = False
         self._scrapType = 0
+        self._nbFromForced = 0
+        self._logAnatomy = True
 
     def _initUI(self):
         self._setupUI()
@@ -105,14 +107,17 @@ class MainWidget(MainWidgetUI):
     def _connectSignals(self):
         self._lottoTypeComboBox.currentIndexChanged.connect(self._lottoTypeComboBoxOnClicked)
         self._nbTicketsSpinBox.valueChanged.connect(self._nbTicketsSpinBoxValueChanged)
-
-        self._connectRadioBtn()
-        self._sevenJumpsCheckBox.clicked.connect(self._sevenJumpsCheckBoxOnClicked)
         self._selectOutPathBtn.clicked.connect(self._selectOutPathBtnOnClicked)
         self._clearOutPathBtn.clicked.connect(self._clearOutPathBtnOnClicked)
 
+        self._connectRadioBtn()
+        self._sevenJumpsCheckBox.clicked.connect(self._sevenJumpsCheckBoxOnClicked)
+        self._logAnatomyCheckBox.clicked.connect(self._logAnatomyCheckBoxOnClicked)
+        self._setSumsBtn.clicked.connect(self._setSumsBtnOnClicked)
+
         self._noNumberCheckBox.clicked.connect(self._noNumberCheckBoxOnClicked)
         self._connectCheckBox()
+        self._nbFromForcedSpinBox.valueChanged.connect(self._nbFromForcedSpinBoxValueChanged)
 
         self._clearTextBtn.clicked.connect(self._clearTextBtnOnClicked)
         self._copyBtn.clicked.connect(self._copyBtnOnClicked)
@@ -136,16 +141,6 @@ class MainWidget(MainWidgetUI):
     def _nbTicketsSpinBoxValueChanged(self, value):
         self._nbTickets = value
 
-    def _connectRadioBtn(self):
-        for index, radioBtn in self._radioBtnMap.iteritems():
-            radioBtn.clicked.connect(functools.partial(self._radioBtnClickedMappedSlot, index))
-
-    def _radioBtnClickedMappedSlot(self, index):
-        self._scrapType = index
-
-    def _sevenJumpsCheckBoxOnClicked(self, checkState):
-        self._doSevenJumps = checkState
-
     def _selectOutPathBtnOnClicked(self):
         fg = QtGui.QFileDialog()
         fg.setFileMode(QtGui.QFileDialog.Directory)
@@ -168,6 +163,28 @@ class MainWidget(MainWidgetUI):
         self._outPutDirLineEdit.setCursorPosition(0)
         self._outPutDirLineEdit.setToolTip('')
         self._outDir = ''
+
+    def _connectRadioBtn(self):
+        for index, radioBtn in self._radioBtnMap.iteritems():
+            radioBtn.clicked.connect(functools.partial(self._radioBtnClickedMappedSlot, index))
+
+    def _radioBtnClickedMappedSlot(self, index):
+        self._scrapType = index
+
+    def _sevenJumpsCheckBoxOnClicked(self, checkState):
+        self._doSevenJumps = checkState
+
+    def _logAnatomyCheckBoxOnClicked(self, checkState):
+        self._logAnatomy = checkState
+
+    def _setSumsBtnOnClicked(self):
+        if not hasattr(self, 'ssw'):
+            self.ssw = SetSumsWidget()
+        else:
+            self.ssw = None
+            self.ssw = SetSumsWidget()
+
+        self.ssw.show()
 
     def _noNumberCheckBoxOnClicked(self):
         for _, checkBox in self._checkBoxMap.iteritems():
@@ -205,6 +222,9 @@ class MainWidget(MainWidgetUI):
         self._nbFromForcedSpinBox.setRange(0, len(self._forcedNumbers))
         self._nbFromForcedSpinBox.setValue(len(self._forcedNumbers))
 
+    def _nbFromForcedSpinBoxValueChanged(self, value):
+        self._nbFromForced = value
+
     def _clearTextBtnOnClicked(self):
         self._displayTextEdit.clear()
 
@@ -221,7 +241,7 @@ class MainWidget(MainWidgetUI):
         r.destroy()
 
     def _generateBtnOnClicked(self):
-        s = self._displayTextEdit.toPlainText()
+        s = ''#self._displayTextEdit.toPlainText()
         s += '*' * 30
         s += '\n'
         s += 'Is Lotto Max: %s\n' % self._isLottoMax
@@ -230,10 +250,12 @@ class MainWidget(MainWidgetUI):
         s += 'Do Seven Jumps: %s\n' % self._doSevenJumps
         s += 'Output Dir: "%s "\n' % self._outDir
         s += 'Forced Numbers: [%s]\n' % ', '.join([str(n).zfill(2) for n in self._forcedNumbers])
+        s += 'Number of Forced Numbers to use: %s\n' % self._nbFromForced
+        s += 'LogAnatomy: %s\n' % self._logAnatomy
         s += '*' * 30
         s += '\n\n\n'
 
-        #self._displayTextEdit.clear()
+        self._displayTextEdit.clear()
 
         self._displayTextEdit.setText(s)
 

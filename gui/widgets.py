@@ -24,9 +24,35 @@
 from PyQt4 import QtCore, QtGui
 from logger import Logger
 
+from styleSheet import StyleSheet
+
 NO_PATH_STRING = '        < using no path >'
 NO_NUM_STRING = '    < no numbers selected >'
 RADIO_BTN = ['Last Six Months', 'All Months', 'Both']
+
+class SetSumsWidget(QtGui.QDialog):
+    def __init__(self, *args, **kwargs):
+        super(SetSumsWidget, self).__init__(*args, **kwargs)
+        self.setModal(True)
+        StyleSheet().setColor(self)
+
+        self._initUI()
+
+    def _initUI(self):
+        self._smMinLable = QtGui.QLabel('Set Minimum Sum')
+        self._smMaxLable = QtGui.QLabel('Set Maximum Sum')
+
+        self._okBtn = QtGui.QPushButton('OK')
+        self._okBtn.clicked.connect(self.close)
+
+        self._mainLayout = QtGui.QVBoxLayout()
+        self._mainLayout.addWidget(self._smMinLable)
+        self._mainLayout.addWidget(self._smMaxLable)
+        self._mainLayout.addWidget(self._okBtn)
+
+        self.setWindowTitle("SET MIN AND MAX SUMS")
+
+        self.setLayout(self._mainLayout)
 
 class MainWidgetUI(QtGui.QWidget):
     def __init__(self, *args, **kwargs):
