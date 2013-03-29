@@ -34,7 +34,7 @@ from Tkinter import Tk
 from PyQt4 import QtCore, QtGui
 
 
-from widgets import MainWidgetUI, SetSumsWidget, NO_NUM_STRING, NO_PATH_STRING
+from widgets import MainWidgetUI, SettingsWidget, NO_NUM_STRING, NO_PATH_STRING
 from styleSheet import StyleSheet
 import msgHandler
 from logger import Logger
@@ -179,10 +179,10 @@ class MainWidget(MainWidgetUI):
 
     def _setSumsBtnOnClicked(self):
         if not hasattr(self, 'ssw'):
-            self.ssw = SetSumsWidget()
+            self.ssw = SettingsWidget(isLottoMax=self._isLottoMax)
         else:
             self.ssw = None
-            self.ssw = SetSumsWidget()
+            self.ssw = SettingsWidget(isLottoMax=self._isLottoMax)
 
         self.ssw.show()
 
