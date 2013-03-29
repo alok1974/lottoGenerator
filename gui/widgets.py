@@ -21,6 +21,7 @@
 ###########################################################################################
 ###########################################################################################
 
+import functools
 from PyQt4 import QtCore, QtGui
 from logger import Logger
 
@@ -38,18 +39,23 @@ SETTINGS = {
 
 
 class SettingsWidget(QtGui.QDialog):
-    def __init__(self, isLottoMax=False, *args, **kwargs):
+    def __init__(self, isLottoMax=False, settings=[], *args, **kwargs):
         super(SettingsWidget, self).__init__(*args, **kwargs)
         self.setModal(True)
         StyleSheet().setColor(self)
+
         self._isLottoMax = isLottoMax
+        self._settings = settings
 
         self._hLineMap = {}
         self._vLineMap = {}
         self._checkBox01Map = {}
         self._checkBox02Map = {}
+        self._nbEvens = []
+        self._nbLows = []
 
         self._initUI()
+        self._initWidgets()
         self._connections()
 
     def _initUI(self):
@@ -88,9 +94,19 @@ class SettingsWidget(QtGui.QDialog):
         self._digitSumMinSpinBox.setStyleSheet("QSpinBox {background-color : \
                                               rgb(69, 98, 104); font-size: 30px;}")
 
+        self._digitSumMinSpinBox.setRange(SETTINGS['dgsm_spnbx_min'][int(self._isLottoMax)],
+                                         SETTINGS['dgsm_spnbx_max'][int(self._isLottoMax)])
+
+        self._digitSumMinSpinBox.setValue(SETTINGS['dgsm_spnbx_min'][int(self._isLottoMax)])
+
         self._digitSumMaxSpinBox = QtGui.QSpinBox()
         self._digitSumMaxSpinBox.setStyleSheet("QSpinBox {background-color : \
                                               rgb(69, 98, 104); font-size: 30px;}")
+
+        self._digitSumMaxSpinBox.setRange(SETTINGS['dgsm_spnbx_min'][int(self._isLottoMax)],
+                                         SETTINGS['dgsm_spnbx_max'][int(self._isLottoMax)])
+
+        self._digitSumMaxSpinBox.setValue(SETTINGS['dgsm_spnbx_max'][int(self._isLottoMax)])
 
 
         # Line Edits
@@ -215,12 +231,69 @@ class SettingsWidget(QtGui.QDialog):
 
         self.setLayout(self._grid)
 
+    def _initWidgets(self):
+        self._updateNbEvensLineEdit()
+        self._updateNbLowsLineEdit()
+
+    def _updateNbEvensLineEdit(self):
+        if not self._nbEvens:
+            self._nbEvensLineEdit.setText(NO_NUM_STRING)
+            return
+
+        s = '[%s]' % ', '.join(sorted([str(n) for n in self._nbEvens]))
+        self._nbEvensLineEdit.setText(s)
+
+    def _updateNbLowsLineEdit(self):
+        if not self._nbLows:
+            self._nbLowsLineEdit.setText(NO_NUM_STRING)
+            return
+
+        s = '[%s]' % ', '.join(sorted([str(n) for n in self._nbLows]))
+        self._nbLowsLineEdit.setText(s)
+
     def _connections(self):
         self._okBtn.clicked.connect(self.close)
         self._defaultsBtn.clicked.connect(self._defaultsBtnOnClicked)
+        self._connectCheckBox01()
+        self._connectCheckBox02()
+
+    def _connectCheckBox01(self):
+        for index, checkBox in self._checkBox01Map.iteritems():
+            checkBox.clicked.connect(functools.partial(self._connectCheckBox01MappedSlot, checkBox, int(index)))
+
+    def _connectCheckBox01MappedSlot(self, item, nbItem):
+        if item.checkState()==2:
+            self._nbEvens.append(nbItem)
+        elif item.checkState()==0:
+            self._nbEvens.remove(nbItem)
+
+        self._updateNbEvensLineEdit()
+
+    def _connectCheckBox02(self):
+        for index, checkBox in self._checkBox02Map.iteritems():
+            checkBox.clicked.connect(functools.partial(self._connectCheckBox02MappedSlot, checkBox, int(index)))
+
+    def _connectCheckBox02MappedSlot(self, item, nbItem):
+        if item.checkState()==2:
+            self._nbLows.append(nbItem)
+        elif item.checkState()==0:
+            self._nbLows.remove(nbItem)
+
+        self._updateNbLowsLineEdit()
 
     def _defaultsBtnOnClicked(self):
         pass
+
+    def _updateSettings(self):
+        self._settings['drsmMin'] = self._drawSumMinSpinBox.value()
+        self._settings['drsmMax'] = self._drawSumMaxSpinBox.value()
+        self._settings['dgsmMin'] = self._digitSumMinSpinBox.value()
+        self._settings['dgsmMax'] = self._digitSumMaxSpinBox.value()
+        self._settings['nbEvens'] = self._nbEvens
+        self._settings['nbLows'] = self._nbLows
+
+    def closeEvent(self, event):
+        self._updateSettings()
 
 class MainWidgetUI(QtGui.QWidget):
     def __init__(self, *args, **kwargs):

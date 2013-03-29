@@ -48,8 +48,6 @@ class MainWidget(MainWidgetUI):
     def __init__(self, *args, **kwargs):
         super(MainWidget, self).__init__(*args, **kwargs)
 
-        self._outPutDir = ''
-
         self._initData()
         self._initUI()
         self._initWidgets()
@@ -64,6 +62,10 @@ class MainWidget(MainWidgetUI):
         self._scrapType = 0
         self._nbFromForced = 0
         self._logAnatomy = True
+
+        self._settings = {'drsmMin': 0, 'drsmMax': 0,
+                            'dgsmMin' : 0, 'dgsmMax': 0,
+                            'nbEvens': [], 'nbLows': []}
 
     def _initUI(self):
         self._setupUI()
@@ -179,10 +181,16 @@ class MainWidget(MainWidgetUI):
 
     def _setSumsBtnOnClicked(self):
         if not hasattr(self, 'ssw'):
-            self.ssw = SettingsWidget(isLottoMax=self._isLottoMax)
+            self.ssw = SettingsWidget(
+                                        isLottoMax=self._isLottoMax,
+                                        settings=self._settings,
+                                     )
         else:
             self.ssw = None
-            self.ssw = SettingsWidget(isLottoMax=self._isLottoMax)
+            self.ssw = SettingsWidget(
+                                        isLottoMax=self._isLottoMax,
+                                        settings=self._settings,
+                                     )
 
         self.ssw.show()
 
@@ -241,7 +249,7 @@ class MainWidget(MainWidgetUI):
         r.destroy()
 
     def _generateBtnOnClicked(self):
-        s = ''#self._displayTextEdit.toPlainText()
+        s = ''
         s += '*' * 30
         s += '\n'
         s += 'Is Lotto Max: %s\n' % self._isLottoMax
@@ -252,6 +260,10 @@ class MainWidget(MainWidgetUI):
         s += 'Forced Numbers: [%s]\n' % ', '.join([str(n).zfill(2) for n in self._forcedNumbers])
         s += 'Number of Forced Numbers to use: %s\n' % self._nbFromForced
         s += 'LogAnatomy: %s\n' % self._logAnatomy
+        s += 'Draw Sum(Min, Max): (%s, %s)\n' % (self._settings['drsmMin'], self._settings['drsmMax'])
+        s += 'Digit Sum(Min, Max): (%s, %s)\n' % (self._settings['dgsmMin'], self._settings['dgsmMax'])
+        s += 'Nb Evens: %s\n' % self._settings['nbEvens']
+        s += 'Nb Lows: %s\n' % self._settings['nbLows']
         s += '*' * 30
         s += '\n\n\n'
 
