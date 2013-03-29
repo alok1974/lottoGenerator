@@ -30,7 +30,7 @@ from styleSheet import StyleSheet
 NO_PATH_STRING = '        < using no path >'
 NO_NUM_STRING = '    < no numbers selected >'
 RADIO_BTN = ['Last Six Months', 'All Months', 'Both']
-SETTINGS = {
+SPN_BX_RANGE = {
             'drsm_spnbx_min': (21, 28),
             'drsm_spnbx_max': (279, 322),
             'dgsm_spnbx_min': (21, 28),
@@ -54,6 +54,7 @@ class SettingsWidget(QtGui.QDialog):
         self._nbEvens = []
         self._nbLows = []
 
+        self._initData()
         self._initUI()
         self._initWidgets()
         self._connections()
@@ -75,38 +76,34 @@ class SettingsWidget(QtGui.QDialog):
         self._drawSumMinSpinBox = QtGui.QSpinBox()
         self._drawSumMinSpinBox.setStyleSheet("QSpinBox {background-color : \
                                               rgb(76, 78, 101); font-size: 30px;}")
+        self._drawSumMinSpinBox.setRange(SPN_BX_RANGE['drsm_spnbx_min'][int(self._isLottoMax)],
+                                         SPN_BX_RANGE['drsm_spnbx_max'][int(self._isLottoMax)])
 
-        self._drawSumMinSpinBox.setRange(SETTINGS['drsm_spnbx_min'][int(self._isLottoMax)],
-                                         SETTINGS['drsm_spnbx_max'][int(self._isLottoMax)])
 
-        self._drawSumMinSpinBox.setValue(SETTINGS['drsm_spnbx_min'][int(self._isLottoMax)])
 
         self._drawSumMaxSpinBox = QtGui.QSpinBox()
         self._drawSumMaxSpinBox.setStyleSheet("QSpinBox {background-color : \
                                               rgb(76, 78, 101); font-size: 30px;}")
+        self._drawSumMaxSpinBox.setRange(SPN_BX_RANGE['drsm_spnbx_min'][int(self._isLottoMax)],
+                                         SPN_BX_RANGE['drsm_spnbx_max'][int(self._isLottoMax)])
 
-        self._drawSumMaxSpinBox.setRange(SETTINGS['drsm_spnbx_min'][int(self._isLottoMax)],
-                                         SETTINGS['drsm_spnbx_max'][int(self._isLottoMax)])
 
-        self._drawSumMaxSpinBox.setValue(SETTINGS['drsm_spnbx_max'][int(self._isLottoMax)])
 
         self._digitSumMinSpinBox = QtGui.QSpinBox()
         self._digitSumMinSpinBox.setStyleSheet("QSpinBox {background-color : \
                                               rgb(69, 98, 104); font-size: 30px;}")
+        self._digitSumMinSpinBox.setRange(SPN_BX_RANGE['dgsm_spnbx_min'][int(self._isLottoMax)],
+                                         SPN_BX_RANGE['dgsm_spnbx_max'][int(self._isLottoMax)])
 
-        self._digitSumMinSpinBox.setRange(SETTINGS['dgsm_spnbx_min'][int(self._isLottoMax)],
-                                         SETTINGS['dgsm_spnbx_max'][int(self._isLottoMax)])
 
-        self._digitSumMinSpinBox.setValue(SETTINGS['dgsm_spnbx_min'][int(self._isLottoMax)])
 
         self._digitSumMaxSpinBox = QtGui.QSpinBox()
         self._digitSumMaxSpinBox.setStyleSheet("QSpinBox {background-color : \
                                               rgb(69, 98, 104); font-size: 30px;}")
+        self._digitSumMaxSpinBox.setRange(SPN_BX_RANGE['dgsm_spnbx_min'][int(self._isLottoMax)],
+                                         SPN_BX_RANGE['dgsm_spnbx_max'][int(self._isLottoMax)])
 
-        self._digitSumMaxSpinBox.setRange(SETTINGS['dgsm_spnbx_min'][int(self._isLottoMax)],
-                                         SETTINGS['dgsm_spnbx_max'][int(self._isLottoMax)])
 
-        self._digitSumMaxSpinBox.setValue(SETTINGS['dgsm_spnbx_max'][int(self._isLottoMax)])
 
 
         # Line Edits
@@ -117,12 +114,17 @@ class SettingsWidget(QtGui.QDialog):
                                               rgb(40, 40, 40); font-size: 16px;}")
         self._nbEvensLineEdit.setMinimumSize(50, 50)
 
+
+
+
         self._nbLowsLineEdit = QtGui.QLineEdit()
         self._nbLowsLineEdit.setText(NO_NUM_STRING)
         self._nbLowsLineEdit.setStyleSheet("QLineEdit {background-color : \
                                               rgb(97, 91, 83); color : \
                                               rgb(40, 40, 40); font-size: 16px;}")
         self._nbLowsLineEdit.setMinimumSize(50, 50)
+
+
 
         # Buttons
         self._okBtn = QtGui.QPushButton('OK')
@@ -231,7 +233,28 @@ class SettingsWidget(QtGui.QDialog):
 
         self.setLayout(self._grid)
 
+    def _initData(self):
+        self._nbEvens = self._settings['nbEvens']
+        self._nbLows = self._settings['nbLows']
+
     def _initWidgets(self):
+        self._drawSumMinSpinBox.setValue(self._settings['drsmMin'])
+        self._drawSumMaxSpinBox.setValue(self._settings['drsmMax'])
+        self._digitSumMinSpinBox.setValue(self._settings['dgsmMin'])
+        self._digitSumMaxSpinBox.setValue(self._settings['dgsmMax'])
+
+        for index, checkBox in self._checkBox01Map.iteritems():
+            if int(index) in self._nbEvens:
+                checkBox.setChecked(True)
+            else:
+                checkBox.setChecked(False)
+
+        for index, checkBox in self._checkBox02Map.iteritems():
+            if int(index) in self._nbLows:
+                checkBox.setChecked(True)
+            else:
+                checkBox.setChecked(False)
+
         self._updateNbEvensLineEdit()
         self._updateNbLowsLineEdit()
 
@@ -282,7 +305,8 @@ class SettingsWidget(QtGui.QDialog):
         self._updateNbLowsLineEdit()
 
     def _defaultsBtnOnClicked(self):
-        pass
+        self._initData()
+        self._initWidgets()
 
     def _updateSettings(self):
         self._settings['drsmMin'] = self._drawSumMinSpinBox.value()

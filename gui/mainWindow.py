@@ -43,6 +43,14 @@ from algorithm.mainAlgorithm import MainAlgorithm
 TITLE = "ALOK'S LOTTO GENERATOR"
 LOTTO_TYPE = ['Lotto 649', 'Lotto MAX']
 MAX_NUMBERS = (6, 7)
+DEF_SETTING = {
+                'drsmMin' : (125, 140),
+                'drsmMax' : (170, 210),
+                'dgsmMin' : (38, 38),
+                'dgsmMax' : (60, 60),
+                'nbEvens' : ([2, 3, 4], [3, 4, 5]),
+                'nbLows' : ([3], [4]),
+              }
 
 class MainWidget(MainWidgetUI):
     def __init__(self, *args, **kwargs):
@@ -63,15 +71,19 @@ class MainWidget(MainWidgetUI):
         self._nbFromForced = 0
         self._logAnatomy = True
 
-        self._settings = {'drsmMin': 0, 'drsmMax': 0,
-                            'dgsmMin' : 0, 'dgsmMax': 0,
-                            'nbEvens': [], 'nbLows': []}
+        self._settings = {
+                            'drsmMin': DEF_SETTING['drsmMin'][int(self._isLottoMax)],
+                            'drsmMax': DEF_SETTING['drsmMax'][int(self._isLottoMax)],
+                            'dgsmMin': DEF_SETTING['dgsmMin'][int(self._isLottoMax)],
+                            'dgsmMax': DEF_SETTING['dgsmMax'][int(self._isLottoMax)],
+                            'nbEvens': DEF_SETTING['nbEvens'][int(self._isLottoMax)],
+                            'nbLows': DEF_SETTING['nbLows'][int(self._isLottoMax)],
+                         }
 
     def _initUI(self):
         self._setupUI()
 
     def _initWidgets(self):
-
         self._lottoTypeComboBox.addItems(self._lottoTypes)
         self._lottoTypeComboBox.setEditable(True)
         self._lottoTypeComboBox.lineEdit().setReadOnly(True)
@@ -85,7 +97,6 @@ class MainWidget(MainWidgetUI):
 
         self._nbFromForcedSpinBox.setRange(0, len(self._forcedNumbers))
         self._nbFromForcedSpinBox.setValue(len(self._forcedNumbers))
-
 
         self._radioBtnMap[0].setChecked(True)
         self._noNumberCheckBox.setChecked(True)
@@ -107,7 +118,7 @@ class MainWidget(MainWidgetUI):
 
 
     def _connectSignals(self):
-        self._lottoTypeComboBox.currentIndexChanged.connect(self._lottoTypeComboBoxOnClicked)
+        self._lottoTypeComboBox.currentIndexChanged.connect(self._lottoTypeComboBoxIndexChanged)
         self._nbTicketsSpinBox.valueChanged.connect(self._nbTicketsSpinBoxValueChanged)
         self._selectOutPathBtn.clicked.connect(self._selectOutPathBtnOnClicked)
         self._clearOutPathBtn.clicked.connect(self._clearOutPathBtnOnClicked)
@@ -128,7 +139,7 @@ class MainWidget(MainWidgetUI):
         self._resetBtn.clicked.connect(self._resetBtnOnClicked)
         self._cancelBtn.clicked.connect(self._cancelBtnOnClicked)
 
-    def _lottoTypeComboBoxOnClicked(self, item):
+    def _lottoTypeComboBoxIndexChanged(self, item):
         if item==0 and len(self._forcedNumbers)==7:
             msgHandler._pop(self, 1)
             self._lottoTypeComboBox.blockSignals(True) # blocking signals so the func does not go in recursion
@@ -139,6 +150,15 @@ class MainWidget(MainWidgetUI):
             return
 
         self._isLottoMax = bool(item)
+
+        self._settings = {
+                            'drsmMin': DEF_SETTING['drsmMin'][int(self._isLottoMax)],
+                            'drsmMax': DEF_SETTING['drsmMax'][int(self._isLottoMax)],
+                            'dgsmMin': DEF_SETTING['dgsmMin'][int(self._isLottoMax)],
+                            'dgsmMax': DEF_SETTING['dgsmMax'][int(self._isLottoMax)],
+                            'nbEvens': DEF_SETTING['nbEvens'][int(self._isLottoMax)],
+                            'nbLows': DEF_SETTING['nbLows'][int(self._isLottoMax)],
+                         }
 
     def _nbTicketsSpinBoxValueChanged(self, value):
         self._nbTickets = value
