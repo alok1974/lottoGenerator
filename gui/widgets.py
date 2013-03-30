@@ -37,6 +37,17 @@ SPN_BX_RANGE = {
             'dgsm_spnbx_max': (63, 70),
            }
 
+DEF_SETTING = {
+                'drsmMin' : (125, 140),
+                'drsmMax' : (170, 210),
+                'dgsmMin' : (38, 38),
+                'dgsmMax' : (60, 60),
+                'nbEvens' : ([2, 3, 4], [3, 4, 5]),
+                'nbLows' : ([3], [4]),
+              }
+
+DEF_RULES = {'drsmRule': True, 'dgsmRule' : False,
+             'evensRule': True, 'lowsRule': False}
 
 class SettingsWidget(QtGui.QDialog):
     def __init__(self, isLottoMax=False, settings=[], *args, **kwargs):
@@ -79,6 +90,8 @@ class SettingsWidget(QtGui.QDialog):
         self._drawSumMinSpinBox.setRange(SPN_BX_RANGE['drsm_spnbx_min'][int(self._isLottoMax)],
                                          SPN_BX_RANGE['drsm_spnbx_max'][int(self._isLottoMax)])
 
+        self._drawSumMinSpinBox.lineEdit().setReadOnly(True)
+        self._drawSumMinSpinBox.lineEdit().setEnabled(False)
 
 
         self._drawSumMaxSpinBox = QtGui.QSpinBox()
@@ -87,7 +100,8 @@ class SettingsWidget(QtGui.QDialog):
         self._drawSumMaxSpinBox.setRange(SPN_BX_RANGE['drsm_spnbx_min'][int(self._isLottoMax)],
                                          SPN_BX_RANGE['drsm_spnbx_max'][int(self._isLottoMax)])
 
-
+        self._drawSumMaxSpinBox.lineEdit().setReadOnly(True)
+        self._drawSumMaxSpinBox.lineEdit().setEnabled(False)
 
         self._digitSumMinSpinBox = QtGui.QSpinBox()
         self._digitSumMinSpinBox.setStyleSheet("QSpinBox {background-color : \
@@ -95,7 +109,8 @@ class SettingsWidget(QtGui.QDialog):
         self._digitSumMinSpinBox.setRange(SPN_BX_RANGE['dgsm_spnbx_min'][int(self._isLottoMax)],
                                          SPN_BX_RANGE['dgsm_spnbx_max'][int(self._isLottoMax)])
 
-
+        self._digitSumMinSpinBox.lineEdit().setReadOnly(True)
+        self._digitSumMinSpinBox.lineEdit().setEnabled(False)
 
         self._digitSumMaxSpinBox = QtGui.QSpinBox()
         self._digitSumMaxSpinBox.setStyleSheet("QSpinBox {background-color : \
@@ -103,7 +118,8 @@ class SettingsWidget(QtGui.QDialog):
         self._digitSumMaxSpinBox.setRange(SPN_BX_RANGE['dgsm_spnbx_min'][int(self._isLottoMax)],
                                          SPN_BX_RANGE['dgsm_spnbx_max'][int(self._isLottoMax)])
 
-
+        self._digitSumMaxSpinBox.lineEdit().setReadOnly(True)
+        self._digitSumMaxSpinBox.lineEdit().setEnabled(False)
 
 
         # Line Edits
@@ -233,15 +249,25 @@ class SettingsWidget(QtGui.QDialog):
 
         self.setLayout(self._grid)
 
-    def _initData(self):
-        self._nbEvens = self._settings['nbEvens']
-        self._nbLows = self._settings['nbLows']
+    def _initData(self, calledFromDefaults=False):
+        if calledFromDefaults:
+            self._nbEvens = DEF_SETTING['nbEvens'][int(self._isLottoMax)][:]
+            self._nbLows = DEF_SETTING['nbLows'][int(self._isLottoMax)][:]
+        else:
+            self._nbEvens = self._settings['nbEvens'][:]
+            self._nbLows = self._settings['nbLows'][:]
 
-    def _initWidgets(self):
-        self._drawSumMinSpinBox.setValue(self._settings['drsmMin'])
-        self._drawSumMaxSpinBox.setValue(self._settings['drsmMax'])
-        self._digitSumMinSpinBox.setValue(self._settings['dgsmMin'])
-        self._digitSumMaxSpinBox.setValue(self._settings['dgsmMax'])
+    def _initWidgets(self, calledFromDefaults=False):
+        if calledFromDefaults:
+            self._drawSumMinSpinBox.setValue(DEF_SETTING['drsmMin'][int(self._isLottoMax)])
+            self._drawSumMaxSpinBox.setValue(DEF_SETTING['drsmMax'][int(self._isLottoMax)])
+            self._digitSumMinSpinBox.setValue(DEF_SETTING['dgsmMin'][int(self._isLottoMax)])
+            self._digitSumMaxSpinBox.setValue(DEF_SETTING['dgsmMax'][int(self._isLottoMax)])
+        else:
+            self._drawSumMinSpinBox.setValue(self._settings['drsmMin'])
+            self._drawSumMaxSpinBox.setValue(self._settings['drsmMax'])
+            self._digitSumMinSpinBox.setValue(self._settings['dgsmMin'])
+            self._digitSumMaxSpinBox.setValue(self._settings['dgsmMax'])
 
         for index, checkBox in self._checkBox01Map.iteritems():
             if int(index) in self._nbEvens:
@@ -305,19 +331,98 @@ class SettingsWidget(QtGui.QDialog):
         self._updateNbLowsLineEdit()
 
     def _defaultsBtnOnClicked(self):
-        self._initData()
-        self._initWidgets()
+        self._initData(calledFromDefaults=True)
+        self._initWidgets(calledFromDefaults=True)
 
     def _updateSettings(self):
         self._settings['drsmMin'] = self._drawSumMinSpinBox.value()
         self._settings['drsmMax'] = self._drawSumMaxSpinBox.value()
         self._settings['dgsmMin'] = self._digitSumMinSpinBox.value()
         self._settings['dgsmMax'] = self._digitSumMaxSpinBox.value()
-        self._settings['nbEvens'] = self._nbEvens
-        self._settings['nbLows'] = self._nbLows
+        self._settings['nbEvens'] = self._nbEvens[:]
+        self._settings['nbLows'] = self._nbLows[:]
 
     def closeEvent(self, event):
         self._updateSettings()
+
+class RulesWidget(QtGui.QDialog):
+    def __init__(self, rules={}, *args, **kwargs):
+        super(RulesWidget, self).__init__(*args, **kwargs)
+        self.setModal(True)
+
+        StyleSheet().setColor(self)
+
+        self._rules = rules
+
+        self._initUI()
+        self._initWidgets()
+
+    def _initUI(self):
+        # CheckBoxes
+        self._drawSumCheckBox = QtGui.QCheckBox('  Apply Draw Sum Rule')
+        self._drawSumCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+
+        self._digitSumCheckBox = QtGui.QCheckBox('  Apply Digit Sum Rule')
+        self._digitSumCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+
+        self._evensCheckBox = QtGui.QCheckBox('  Apply Even/Odd Number Rule')
+        self._evensCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+
+        self._lowsCheckBox = QtGui.QCheckBox('  Apply Low/High Number Rule')
+        self._lowsCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+
+        # Buttons
+        self._okBtn = QtGui.QPushButton('OK')
+        self._okBtn.setStyleSheet("QPushButton {background-color : \
+                                        rgb(110, 122, 74);}")
+        self._okBtn.clicked.connect(self.close)
+
+
+        self._defaultsBtn = QtGui.QPushButton('Defaults')
+        self._defaultsBtn.setStyleSheet("QPushButton {background-color : \
+                                        rgb(94, 57, 69);}")
+
+        self._defaultsBtn.clicked.connect(self._defaultsBtnOnClicked)
+
+
+        self._grid = QtGui.QGridLayout()
+        self._grid.setSpacing(30)
+
+
+        self._grid.addWidget(self._drawSumCheckBox, 1, 0)
+        self._grid.addWidget(self._digitSumCheckBox, 2, 0)
+        self._grid.addWidget(self._evensCheckBox, 3, 0)
+        self._grid.addWidget(self._lowsCheckBox, 4, 0)
+
+        self._hlayout = QtGui.QHBoxLayout()
+        self._hlayout.addWidget(self._okBtn)
+        self._hlayout.addWidget(self._defaultsBtn)
+
+        self._grid.addLayout(self._hlayout, 6, 0)
+
+        self.setLayout(self._grid)
+
+    def _initWidgets(self):
+        self._drawSumCheckBox.setChecked(self._rules['drsmRule'])
+        self._digitSumCheckBox.setChecked(self._rules['dgsmRule'])
+        self._evensCheckBox.setChecked(self._rules['evensRule'])
+        self._lowsCheckBox.setChecked(self._rules['lowsRule'])
+
+    def _defaultsBtnOnClicked(self):
+        self._drawSumCheckBox.setChecked(DEF_RULES['drsmRule'])
+        self._digitSumCheckBox.setChecked(DEF_RULES['dgsmRule'])
+        self._evensCheckBox.setChecked(DEF_RULES['evensRule'])
+        self._lowsCheckBox.setChecked(DEF_RULES['lowsRule'])
+
+    def _updateRules(self):
+        self._rules['drsmRule'] = bool(self._drawSumCheckBox.isChecked())
+        self._rules['dgsmRule'] = bool(self._digitSumCheckBox.isChecked())
+        self._rules['evensRule'] = bool(self._evensCheckBox.isChecked())
+        self._rules['lowsRule'] = bool(self._lowsCheckBox.isChecked())
+
+    def closeEvent(self, event):
+        self._updateRules()
+
 
 class MainWidgetUI(QtGui.QWidget):
     def __init__(self, *args, **kwargs):
@@ -448,12 +553,12 @@ class MainWidgetUI(QtGui.QWidget):
         self._selectOutPathBtn.setStyleSheet("QPushButton {background-color :\
                                              rgb(89, 65, 62);}")
 
-        self._setSumsBtn = QtGui.QPushButton('Settings')
-        self._setSumsBtn.setStyleSheet("QPushButton {background-color :\
+        self._settingsBtn = QtGui.QPushButton('Settings')
+        self._settingsBtn.setStyleSheet("QPushButton {background-color :\
                                              rgb(89, 76, 62);}")
 
-        self._setRulesBtn = QtGui.QPushButton('Rules')
-        self._setRulesBtn.setStyleSheet("QPushButton {background-color :\
+        self._rulesBtn = QtGui.QPushButton('Rules')
+        self._rulesBtn.setStyleSheet("QPushButton {background-color :\
                                              rgb(68, 89, 62);}")
 
         #-----------------------------------------------------------------------
@@ -515,8 +620,8 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addWidget(self._sevenJumpsCheckBox, 4, 2)
         self._grid.addWidget(self._logAnatomyCheckBox, 5, 2)
         self._grid.addWidget(self._hLineMap[5], 6, 2)
-        self._grid.addWidget(self._setSumsBtn, 7, 2)
-        self._grid.addWidget(self._setRulesBtn, 8, 2)
+        self._grid.addWidget(self._settingsBtn, 7, 2)
+        self._grid.addWidget(self._rulesBtn, 8, 2)
 
         #-----------------------------------------------------------------------
 

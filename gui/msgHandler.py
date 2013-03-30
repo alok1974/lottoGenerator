@@ -36,6 +36,7 @@ ENUM_CODE = {
                 # Messages
                 1: ('Lotto 649 cannot have more than 6 forced numbers. Please deselect some forced numbers before you change Lotto Type.', IS_MSG),
                 2: ('You cannot force more than %s numbers for %s.', IS_MSG),
+                3: ('No Internet connection available, cannot generate !', IS_MSG),
 
                 # Questions
                 101: ('', IS_QUESTION),

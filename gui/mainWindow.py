@@ -23,18 +23,16 @@
 
 import os
 import sys
-
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)), '..'))
-
-if ROOT_DIR not in sys.path:
-    sys.path.append(ROOT_DIR)
-
+import urllib2
 import functools
 from Tkinter import Tk
 from PyQt4 import QtCore, QtGui
 
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)), '..'))
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
 
-from widgets import MainWidgetUI, SettingsWidget, NO_NUM_STRING, NO_PATH_STRING
+from widgets import MainWidgetUI, SettingsWidget, RulesWidget, DEF_SETTING, DEF_RULES, NO_NUM_STRING, NO_PATH_STRING
 from styleSheet import StyleSheet
 import msgHandler
 from logger import Logger
@@ -43,14 +41,7 @@ from algorithm.mainAlgorithm import MainAlgorithm
 TITLE = "ALOK'S LOTTO GENERATOR"
 LOTTO_TYPE = ['Lotto 649', 'Lotto MAX']
 MAX_NUMBERS = (6, 7)
-DEF_SETTING = {
-                'drsmMin' : (125, 140),
-                'drsmMax' : (170, 210),
-                'dgsmMin' : (38, 38),
-                'dgsmMax' : (60, 60),
-                'nbEvens' : ([2, 3, 4], [3, 4, 5]),
-                'nbLows' : ([3], [4]),
-              }
+
 
 class MainWidget(MainWidgetUI):
     def __init__(self, *args, **kwargs):
@@ -71,6 +62,7 @@ class MainWidget(MainWidgetUI):
         self._nbFromForced = 0
         self._logAnatomy = True
 
+
         self._settings = {
                             'drsmMin': DEF_SETTING['drsmMin'][int(self._isLottoMax)],
                             'drsmMax': DEF_SETTING['drsmMax'][int(self._isLottoMax)],
@@ -79,6 +71,9 @@ class MainWidget(MainWidgetUI):
                             'nbEvens': DEF_SETTING['nbEvens'][int(self._isLottoMax)],
                             'nbLows': DEF_SETTING['nbLows'][int(self._isLottoMax)],
                          }
+
+        self._rules = {'drsmRule': DEF_RULES['drsmRule'], 'dgsmRule' : DEF_RULES['dgsmRule'],
+                       'evensRule': DEF_RULES['evensRule'], 'lowsRule': DEF_RULES['lowsRule']}
 
     def _initUI(self):
         self._setupUI()
@@ -126,7 +121,8 @@ class MainWidget(MainWidgetUI):
         self._connectRadioBtn()
         self._sevenJumpsCheckBox.clicked.connect(self._sevenJumpsCheckBoxOnClicked)
         self._logAnatomyCheckBox.clicked.connect(self._logAnatomyCheckBoxOnClicked)
-        self._setSumsBtn.clicked.connect(self._setSumsBtnOnClicked)
+        self._settingsBtn.clicked.connect(self._settingsBtnOnClicked)
+        self._rulesBtn.clicked.connect(self._rulesBtnOnClicked)
 
         self._noNumberCheckBox.clicked.connect(self._noNumberCheckBoxOnClicked)
         self._connectCheckBox()
@@ -199,20 +195,29 @@ class MainWidget(MainWidgetUI):
     def _logAnatomyCheckBoxOnClicked(self, checkState):
         self._logAnatomy = checkState
 
-    def _setSumsBtnOnClicked(self):
-        if not hasattr(self, 'ssw'):
-            self.ssw = SettingsWidget(
+    def _settingsBtnOnClicked(self):
+        if not hasattr(self, 'sw'):
+            self.sw = SettingsWidget(
                                         isLottoMax=self._isLottoMax,
                                         settings=self._settings,
                                      )
         else:
-            self.ssw = None
-            self.ssw = SettingsWidget(
+            self.sw = None
+            self.sw = SettingsWidget(
                                         isLottoMax=self._isLottoMax,
                                         settings=self._settings,
                                      )
 
-        self.ssw.show()
+        self.sw.show()
+
+    def _rulesBtnOnClicked(self):
+        if not hasattr(self, 'rw'):
+            self.rw = RulesWidget(rules=self._rules)
+        else:
+            self.rw = None
+            self.rw = RulesWidget(rules=self._rules)
+
+        self.rw.show()
 
     def _noNumberCheckBoxOnClicked(self):
         for _, checkBox in self._checkBoxMap.iteritems():
@@ -268,7 +273,18 @@ class MainWidget(MainWidgetUI):
         r.clipboard_append('%s' % text)
         r.destroy()
 
+    def _isNetworkAvailable(self):
+        try:
+            response=urllib2.urlopen('http://www.google.com',timeout=1)#'http://74.125.113.99',timeout=1) # pinging google.com
+            return True
+        except urllib2.URLError as err:pass
+        return False
+
     def _generateBtnOnClicked(self):
+        if not self._isNetworkAvailable():
+            msgHandler._pop(self, 3)
+            return
+
         s = ''
         s += '*' * 30
         s += '\n'
@@ -284,6 +300,10 @@ class MainWidget(MainWidgetUI):
         s += 'Digit Sum(Min, Max): (%s, %s)\n' % (self._settings['dgsmMin'], self._settings['dgsmMax'])
         s += 'Nb Evens: %s\n' % self._settings['nbEvens']
         s += 'Nb Lows: %s\n' % self._settings['nbLows']
+        s += 'Draw Sum Rule: %s\n' % self._rules['drsmRule']
+        s += 'Digit Sum Rule: %s\n' % self._rules['dgsmRule']
+        s += 'Even/Odd Rule: %s\n' % self._rules['evensRule']
+        s += 'Low/High Rule: %s\n' % self._rules['lowsRule']
         s += '*' * 30
         s += '\n\n\n'
 
