@@ -90,7 +90,7 @@ class MainAlgorithm(Settings):
                 if n in r:
                     rowsJumpData[index + 1] += 1
 
-        for k,v in rowsJumpData.iteritems():
+        for k, v in rowsJumpData.iteritems():
             if v > 1:
                 nbSevenJumps += 1
 
@@ -114,17 +114,14 @@ class MainAlgorithm(Settings):
         NB_LOWS = rules['NB_LOWS'][op]
 
         self._setDrawAnatomy()
-        rule1 = SR_S <= self.sm <= SR_E
-        rule2 = self.nbEven in NB_EVENS
-        rule3 = self.nbLow in NB_LOWS
-        rule4 = DSR_S <= self.dsm <= DSR_E
 
-        if self.doSevenJumps:
-            rule5 = self.nbSevenJumps>0
-        else:
-            rule5 = self.nbSevenJumps==0
+        drsmRule = (SR_S <= self.sm <= SR_E if self.applyDrawSum else True)
+        dgsmRule = (DSR_S <= self.dsm <= DSR_E if self.applyDigitSum else True)
+        evensRule = (self.nbEven in NB_EVENS if self.applyEvens else True)
+        lowsRule = (self.nbLow in NB_LOWS if self.applyLows else True)
+        doSevenJumps = (self.nbSevenJumps>0 if self.doSevenJumps else self.nbSevenJumps==0)
 
-        self.validation =  rule1 and rule2 and rule5
+        self.validation =  drsmRule and dgsmRule and evensRule and lowsRule and doSevenJumps
 
     def runAlg(self):
         lottoData = None
@@ -148,25 +145,21 @@ class MainAlgorithm(Settings):
                 allGen.append(self.winningDraw)
 
         self.gen = allGen
-        self.output()
+
+        return self.output()
 
     def output(self):
         op = Output(isMax=self.isMax, rowsInATicket=self.rowsInATicket, logAnatomy=self.logAnatomy,
                     forcedNumbers=self.forcedNumbers, extraFileName=self.extraFileName)
         self.outStr, self.outStrDisp = op._makeOutPutString(self.gen)
 
-        if self.display:
-            print self.outStrDisp
-
         if self.write:
-            outDir = os.path.join(self.writeDirPath, "output")
-            if not os.path.exists(outDir):
-                os.mkdir(outDir)
-
-            p = os.path.join(outDir, op._getFileName())
+            p = os.path.join(self.writeDirPath, op._getFileName())
             f = open(p, 'w')
             f.write(self.outStr)
             f.close()
+
+        return self.outStrDisp
 
 if __name__ == '__main__':
     s = time.time()

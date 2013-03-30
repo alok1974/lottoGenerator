@@ -20,3 +20,35 @@
 ##                                                                                       ##
 ###########################################################################################
 ###########################################################################################
+
+SPN_BX_RANGE = {
+                'drsm_spnbx_min': (21, 28),
+                'drsm_spnbx_max': (279, 322),
+                'dgsm_spnbx_min': (21, 28),
+                'dgsm_spnbx_max': (63, 70),
+               }
+
+
+DEF_SETTING = {
+                'drsmMin' : (125, 140),
+                'drsmMax' : (170, 210),
+                'dgsmMin' : (38, 38),
+                'dgsmMax' : (60, 60),
+                'nbEvens' : ([2, 3, 4], [3, 4, 5]),
+                'nbLows' : ([3], [4]),
+              }
+
+
+NO_PATH_STRING = '        < using no path >'
+
+NO_NUM_STRING = '    < no numbers selected >'
+
+RADIO_BTN = ['Last Six Months', 'All Months', 'Both']
+
+
+DEF_RULES = {
+                'drsmRule': True,
+                'dgsmRule' : False,
+                'evensRule': True,
+                'lowsRule': False
+            }

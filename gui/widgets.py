@@ -27,27 +27,7 @@ from logger import Logger
 
 from styleSheet import StyleSheet
 
-NO_PATH_STRING = '        < using no path >'
-NO_NUM_STRING = '    < no numbers selected >'
-RADIO_BTN = ['Last Six Months', 'All Months', 'Both']
-SPN_BX_RANGE = {
-            'drsm_spnbx_min': (21, 28),
-            'drsm_spnbx_max': (279, 322),
-            'dgsm_spnbx_min': (21, 28),
-            'dgsm_spnbx_max': (63, 70),
-           }
-
-DEF_SETTING = {
-                'drsmMin' : (125, 140),
-                'drsmMax' : (170, 210),
-                'dgsmMin' : (38, 38),
-                'dgsmMax' : (60, 60),
-                'nbEvens' : ([2, 3, 4], [3, 4, 5]),
-                'nbLows' : ([3], [4]),
-              }
-
-DEF_RULES = {'drsmRule': True, 'dgsmRule' : False,
-             'evensRule': True, 'lowsRule': False}
+from gui import *
 
 class SettingsWidget(QtGui.QDialog):
     def __init__(self, isLottoMax=False, settings=[], *args, **kwargs):
@@ -232,10 +212,8 @@ class SettingsWidget(QtGui.QDialog):
         self._grid.addLayout(self._checkBox02Layout, 6, 2)
         self._grid.addWidget(self._nbLowsLineEdit, 7, 2)
 
-
         # Column 04
         self._grid.addWidget(self._vLineMap[2], 0, 3, 8, 1)
-
 
         # Column 05
         self._grid.addWidget(self._hLineMap[5], 0, 4)
@@ -243,11 +221,9 @@ class SettingsWidget(QtGui.QDialog):
         self._grid.addWidget(self._hLineMap[6], 4, 4)
         self._grid.addWidget(self._okBtn, 5, 4, 3, 1)
 
-
-
-        self.setWindowTitle("SETTINGS")
-
+        self.setWindowTitle("Settings")
         self.setLayout(self._grid)
+        self.setGeometry(100, 100, 10, 10)
 
     def _initData(self, calledFromDefaults=False):
         if calledFromDefaults:
@@ -354,22 +330,36 @@ class RulesWidget(QtGui.QDialog):
 
         self._rules = rules
 
+        self._hLineMap = {}
+
         self._initUI()
         self._initWidgets()
 
     def _initUI(self):
         # CheckBoxes
         self._drawSumCheckBox = QtGui.QCheckBox('  Apply Draw Sum Rule')
-        self._drawSumCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+        self._drawSumCheckBox.setStyleSheet("QCheckBox {font-size: 16px;} \
+                                            QCheckBox::indicator::checked \
+                                            {background-color: rgb(200, 200, 0);}")
+
+
 
         self._digitSumCheckBox = QtGui.QCheckBox('  Apply Digit Sum Rule')
-        self._digitSumCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+        self._digitSumCheckBox.setStyleSheet("QCheckBox {font-size: 16px;} \
+                                            QCheckBox::indicator::checked \
+                                            {background-color: rgb(200, 200, 0);}")
+
 
         self._evensCheckBox = QtGui.QCheckBox('  Apply Even/Odd Number Rule')
-        self._evensCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+        self._evensCheckBox.setStyleSheet("QCheckBox {font-size: 16px;} \
+                                            QCheckBox::indicator::checked \
+                                            {background-color: rgb(200, 200, 0);}")
+
 
         self._lowsCheckBox = QtGui.QCheckBox('  Apply Low/High Number Rule')
-        self._lowsCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+        self._lowsCheckBox.setStyleSheet("QCheckBox {font-size: 16px;} \
+                                            QCheckBox::indicator::checked \
+                                            {background-color: rgb(200, 200, 0);}")
 
         # Buttons
         self._okBtn = QtGui.QPushButton('OK')
@@ -385,14 +375,28 @@ class RulesWidget(QtGui.QDialog):
         self._defaultsBtn.clicked.connect(self._defaultsBtnOnClicked)
 
 
+        # Lines
+        for i in range(2):
+            _line = QtGui.QFrame()
+            _line.setGeometry(QtCore.QRect(170, 90, 118, 8))
+            _line.setFrameShape(QtGui.QFrame.HLine)
+            _line.setFrameShadow(QtGui.QFrame.Sunken)
+            _line.setStyleSheet("QFrame {background-color : rgb(97, 91, 83);}")
+            self._hLineMap[i+1] = _line
+
+
+
+
+        # Grid Layout
         self._grid = QtGui.QGridLayout()
         self._grid.setSpacing(30)
 
-
+        self._grid.addWidget(self._hLineMap[1], 0, 0)
         self._grid.addWidget(self._drawSumCheckBox, 1, 0)
         self._grid.addWidget(self._digitSumCheckBox, 2, 0)
         self._grid.addWidget(self._evensCheckBox, 3, 0)
         self._grid.addWidget(self._lowsCheckBox, 4, 0)
+        self._grid.addWidget(self._hLineMap[2], 5, 0)
 
         self._hlayout = QtGui.QHBoxLayout()
         self._hlayout.addWidget(self._okBtn)
@@ -401,6 +405,8 @@ class RulesWidget(QtGui.QDialog):
         self._grid.addLayout(self._hlayout, 6, 0)
 
         self.setLayout(self._grid)
+        self.setWindowTitle("Rules")
+        self.setGeometry(100, 100, 10, 10)
 
     def _initWidgets(self):
         self._drawSumCheckBox.setChecked(self._rules['drsmRule'])
@@ -503,6 +509,9 @@ class MainWidgetUI(QtGui.QWidget):
         self._logAnatomyCheckBox = QtGui.QCheckBox("Log Details in Results")
         self._logAnatomyCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
 
+        self._logSettingsCheckBox = QtGui.QCheckBox("Show Settings in Results")
+        self._logSettingsCheckBox.setStyleSheet("QCheckBox {font-size: 16px;}")
+
         #-----------------------------------------------------------------------
 
         # Lines
@@ -593,7 +602,6 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addWidget(self._outPutDirLineEdit, 7, 0)
 
         self._hFolderLayout = QtGui.QHBoxLayout()
-        #self._hFolderLayout.addStretch(100)
         self._hFolderLayout.addWidget(self._selectOutPathBtn)
         self._hFolderLayout.addWidget(self._clearOutPathBtn)
 
@@ -619,7 +627,7 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addWidget(self._hLineMap[4], 3, 2)
         self._grid.addWidget(self._sevenJumpsCheckBox, 4, 2)
         self._grid.addWidget(self._logAnatomyCheckBox, 5, 2)
-        self._grid.addWidget(self._hLineMap[5], 6, 2)
+        self._grid.addWidget(self._logSettingsCheckBox, 6, 2)
         self._grid.addWidget(self._settingsBtn, 7, 2)
         self._grid.addWidget(self._rulesBtn, 8, 2)
 
@@ -655,9 +663,7 @@ class MainWidgetUI(QtGui.QWidget):
                 self._numberGrid.addWidget(self._nbCheckBox, i, j)
 
         self._grid.addLayout(self._numberGrid, 2, 4, 4, 1)
-        #self._grid.addWidget(self._forcedNumbersDisplayLabel, 5, 4)
         self._grid.addWidget(self._forcedNumbersLineEdit, 6, 4)
-        #self._grid.addWidget(self._hLineMap[7], 6, 4)
         self._grid.addWidget(self._nbFromForcedLabel, 7, 4)
         self._grid.addWidget(self._nbFromForcedSpinBox, 8, 4)
 
@@ -679,10 +685,6 @@ class MainWidgetUI(QtGui.QWidget):
         self._grid.addLayout(self._hLayout, 5, 6)
         self._grid.addWidget(self._hLineMap[9], 6, 6)
 
-        #self._hBtnLayout = QtGui.QHBoxLayout()
-        #self._hBtnLayout.addWidget(self._generateBtn)
-        #self._hBtnLayout.addWidget(self._resetBtn)
-        #self._grid.addLayout(self._hBtnLayout, 7, 6)
         self._grid.addWidget(self._generateBtn, 7, 6)
         self._grid.addWidget(self._cancelBtn, 8, 6)
 

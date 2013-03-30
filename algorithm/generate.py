@@ -26,7 +26,6 @@ from mainAlgorithm import MainAlgorithm
 def generateTickets():
     lottoIsMax = False
     writeDirPath = r'C:\Users\Alok\Desktop'
-    display = True
     write = True
     logAnatomy = True
     nbTickets = 3
@@ -38,7 +37,6 @@ def generateTickets():
     ma = MainAlgorithm(
                         lottoIsMax=lottoIsMax,
                         writeDirPath=writeDirPath,
-                        display=display,
                         write=write,
                         scrapType=scrapType,
                         logAnatomy=logAnatomy,
@@ -47,7 +45,9 @@ def generateTickets():
                         forcedNumbers=forcedNumbers,
                         nbFromForcedRandom=nbFromForcedRandom,
                        )
-    ma.runAlg()
+    s = ma.runAlg()
+
+    print s
 
 if __name__ == '__main__':
     generateTickets()

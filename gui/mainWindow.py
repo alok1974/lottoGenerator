@@ -32,16 +32,19 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)),
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
-from widgets import MainWidgetUI, SettingsWidget, RulesWidget, DEF_SETTING, DEF_RULES, NO_NUM_STRING, NO_PATH_STRING
+from gui import *
+from widgets import *
+
+
 from styleSheet import StyleSheet
 import msgHandler
 from logger import Logger
 from algorithm.mainAlgorithm import MainAlgorithm
 
-TITLE = "ALOK'S LOTTO GENERATOR"
+TITLE = "Alok's Lotto Generator"
 LOTTO_TYPE = ['Lotto 649', 'Lotto MAX']
 MAX_NUMBERS = (6, 7)
-
+OUT_FOLDER = 'output'
 
 class MainWidget(MainWidgetUI):
     def __init__(self, *args, **kwargs):
@@ -61,6 +64,7 @@ class MainWidget(MainWidgetUI):
         self._scrapType = 0
         self._nbFromForced = 0
         self._logAnatomy = True
+        self._logSettings = False
 
 
         self._settings = {
@@ -121,6 +125,7 @@ class MainWidget(MainWidgetUI):
         self._connectRadioBtn()
         self._sevenJumpsCheckBox.clicked.connect(self._sevenJumpsCheckBoxOnClicked)
         self._logAnatomyCheckBox.clicked.connect(self._logAnatomyCheckBoxOnClicked)
+        self._logSettingsCheckBox.clicked.connect(self._logSettingsCheckBoxOnClicked)
         self._settingsBtn.clicked.connect(self._settingsBtnOnClicked)
         self._rulesBtn.clicked.connect(self._rulesBtnOnClicked)
 
@@ -171,10 +176,13 @@ class MainWidget(MainWidgetUI):
         if not f:
             return
 
+        # Adding folder for result output
+        f = os.path.abspath(os.path.join(f, OUT_FOLDER))
+
+        self._outDir = str(f)
         self._outPutDirLineEdit.setText(f)
         self._outPutDirLineEdit.setCursorPosition(0)
         self._outPutDirLineEdit.setToolTip(f)
-        self._outDir = str(f)
 
     def _clearOutPathBtnOnClicked(self):
         self._outPutDirLineEdit.setText(NO_PATH_STRING)
@@ -194,6 +202,9 @@ class MainWidget(MainWidgetUI):
 
     def _logAnatomyCheckBoxOnClicked(self, checkState):
         self._logAnatomy = checkState
+
+    def _logSettingsCheckBoxOnClicked(self, checkState):
+        self._logSettings = checkState
 
     def _settingsBtnOnClicked(self):
         if not hasattr(self, 'sw'):
@@ -286,26 +297,49 @@ class MainWidget(MainWidgetUI):
             return
 
         s = ''
-        s += '*' * 30
-        s += '\n'
-        s += 'Is Lotto Max: %s\n' % self._isLottoMax
-        s += 'Nb Tickets: %s\n' % self._nbTickets
-        s += 'Scrap Type: %s\n' % self._scrapType
-        s += 'Do Seven Jumps: %s\n' % self._doSevenJumps
-        s += 'Output Dir: "%s "\n' % self._outDir
-        s += 'Forced Numbers: [%s]\n' % ', '.join([str(n).zfill(2) for n in self._forcedNumbers])
-        s += 'Number of Forced Numbers to use: %s\n' % self._nbFromForced
-        s += 'LogAnatomy: %s\n' % self._logAnatomy
-        s += 'Draw Sum(Min, Max): (%s, %s)\n' % (self._settings['drsmMin'], self._settings['drsmMax'])
-        s += 'Digit Sum(Min, Max): (%s, %s)\n' % (self._settings['dgsmMin'], self._settings['dgsmMax'])
-        s += 'Nb Evens: %s\n' % self._settings['nbEvens']
-        s += 'Nb Lows: %s\n' % self._settings['nbLows']
-        s += 'Draw Sum Rule: %s\n' % self._rules['drsmRule']
-        s += 'Digit Sum Rule: %s\n' % self._rules['dgsmRule']
-        s += 'Even/Odd Rule: %s\n' % self._rules['evensRule']
-        s += 'Low/High Rule: %s\n' % self._rules['lowsRule']
-        s += '*' * 30
-        s += '\n\n\n'
+        if self._logSettings:
+            s += 'Generating Results with following settings: \n\n'
+            s += '*' * 30
+            s += '\n'
+            s += 'Is Lotto Max: %s\n' % self._isLottoMax
+            s += 'Nb Tickets: %s\n' % self._nbTickets
+            s += 'Scrap Type: %s\n' % self._scrapType
+            s += 'Do Seven Jumps: %s\n' % self._doSevenJumps
+            s += 'Output Dir: "%s "\n' % self._outDir
+            s += 'Forced Numbers: [%s]\n' % ', '.join([str(n).zfill(2) for n in self._forcedNumbers])
+            s += 'Number of Forced Numbers to use: %s\n' % self._nbFromForced
+            s += 'LogAnatomy: %s\n' % self._logAnatomy
+            s += 'Draw Sum(Min, Max): (%s, %s)\n' % (self._settings['drsmMin'], self._settings['drsmMax'])
+            s += 'Digit Sum(Min, Max): (%s, %s)\n' % (self._settings['dgsmMin'], self._settings['dgsmMax'])
+            s += 'Nb Evens: %s\n' % self._settings['nbEvens']
+            s += 'Nb Lows: %s\n' % self._settings['nbLows']
+            s += 'Draw Sum Rule: %s\n' % self._rules['drsmRule']
+            s += 'Digit Sum Rule: %s\n' % self._rules['dgsmRule']
+            s += 'Even/Odd Rule: %s\n' % self._rules['evensRule']
+            s += 'Low/High Rule: %s\n\n' % self._rules['lowsRule']
+            s += '*' * 30
+            s += '\n'
+            s += 'Results\n'
+            s += '*' * 30
+            s += '\n\n\n'
+
+        write = bool(self._outDir)
+
+        ma = MainAlgorithm(lottoIsMax=self._isLottoMax,
+                           writeDirPath=self._outDir,
+                           write=write,
+                           scrapType=self._scrapType,
+                           logAnatomy=self._logAnatomy,
+                           nbTickets=self._nbTickets,
+                           doSevenJumps=self._doSevenJumps,
+                           forcedNumbers=self._forcedNumbers,
+                           nbFromForcedRandom=self._nbFromForced,
+                           applyDrawSum=self._rules['drsmRule'],
+                           applyDigitSum=self._rules['dgsmRule'],
+                           applyEvens=self._rules['evensRule'],
+                           applyLows=self._rules['lowsRule'])
+
+        s += ma.runAlg()
 
         self._displayTextEdit.clear()
 

@@ -39,9 +39,6 @@ class ScrapLottoData(object):
         if 'scrapType' in kwargs:
             self.scrapType = kwargs['scrapType']
 
-
-        print 'scrapType: %s' % self.scrapType
-
         self.webData = None
         self.rawData = None
         self.totalDraws = None

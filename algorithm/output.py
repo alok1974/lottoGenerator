@@ -83,7 +83,7 @@ class Output(object):
                 outStr += '\n'
 
                 outStrDisp += 'Ticket %02d\n'%ctr
-                outStrDisp += '-' * nbDashes
+                outStrDisp += '-' * (nbDashes + 10)
                 outStrDisp += '\n'
 
                 ctr += 1
@@ -100,7 +100,7 @@ class Output(object):
                     outStr += '-' * nbDashes
                     outStr += '\n'
 
-                    outStrDisp += '-' * nbDashes
+                    outStrDisp += '-' * (nbDashes + 10)
                     outStrDisp += '\n'
 
 
@@ -109,7 +109,7 @@ class Output(object):
                 outStr += '\n'
                 outStr += '\n'
 
-                outStrDisp += '-' * nbDashes
+                outStrDisp += '-' * (nbDashes + 10)
                 outStrDisp += '\n'
                 outStrDisp += '\n'
 

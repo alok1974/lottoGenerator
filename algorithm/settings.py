@@ -67,21 +67,19 @@ class Settings(object):
         if 'nbTickets' in kwargs:
             self.nbTickets = kwargs['nbTickets']
 
-        self.display = True
-        if 'display' in kwargs:
-            self.display = kwargs['display']
-
         self.write = True
         if 'write' in kwargs:
             self.write = kwargs['write']
 
-        self.writeDirPath = os.path.dirname(os.path.abspath(__file__))
-        if 'writeDirPath' in kwargs:
-            userPath = kwargs['writeDirPath']
-            if os.path.exists(userPath):
+        if self.write:
+            self.writeDirPath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'output')
+            if 'writeDirPath' in kwargs:
+                userPath = kwargs['writeDirPath']
+
+                if not os.path.exists(userPath):
+                    os.mkdir(userPath)
+
                 self.writeDirPath = userPath
-            else:
-                print 'Specified write path : %s was not found, \ndefault path: %s will be used' % (userPath, self.writeDirPath)
 
         self.maxLoops = 1
         if 'maxLoops' in kwargs:
@@ -119,6 +117,24 @@ class Settings(object):
                 raise Exception('nbFromForcedRandom cannot be greater than total numbers in forcedNumbers !!')
 
             self.nbFromForcedRandom = kwargs['nbFromForcedRandom']
+
+        self.applyDrawSum = True
+        if 'applyDrawSum' in kwargs:
+            self.applyDrawSum = kwargs['applyDrawSum']
+
+        self.applyDigitSum = False
+        if 'applyDigitSum' in kwargs:
+            self.applyDigitSum = kwargs['applyDigitSum']
+
+        self.applyEvens = True
+        if 'applyEvens' in kwargs:
+            self.applyEvens = kwargs['applyDigitSum']
+
+        self.applyLows = False
+        if 'applyLows' in kwargs:
+            self.applyLows = kwargs['applyLows']
+
+
 
     def _assertData(self):
         if self.forcedNumbers != [] and self.nbFromForcedRandom == 0:
