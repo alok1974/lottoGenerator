@@ -163,8 +163,19 @@ class MainAlgorithm(Settings):
         return self.output()
 
     def output(self):
-        op = Output(isMax=self.isMax, rowsInATicket=self.rowsInATicket, logAnatomy=self.logAnatomy,
-                    forcedNumbers=self.forcedNumbers, extraFileName=self.extraFileName)
+        op = Output(
+                        isMax=self.isMax,
+                        rowsInATicket=self.rowsInATicket,
+                        logAnatomy=self.logAnatomy,
+                        forcedNumbers=self.forcedNumbers,
+                        extraFileName=self.extraFileName,
+                        applyDrawSum=self.applyDrawSum,
+                        applyDigitSum=self.applyDigitSum,
+                        applyEvens=self.applyEvens,
+                        applyLows=self.applyLows,
+
+                   )
+
         self.outStr, self.outStrDisp = op._makeOutPutString(self.gen)
 
         if self.write:

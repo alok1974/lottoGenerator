@@ -45,11 +45,37 @@ class Output(object):
         if 'forcedNumbers' in kwargs:
             self.forcedNumbers = kwargs['forcedNumbers']
 
+        self.applyDrawSum = False
+        if 'applyDrawSum' in kwargs:
+            self.applyDrawSum = kwargs['applyDrawSum']
+
+        self.applyDigitSum = False
+        if 'applyDigitSum' in kwargs:
+            self.applyDigitSum = kwargs['applyDigitSum']
+
+        self.applyEvens = False
+        if 'applyEvens' in kwargs:
+            self.applyEvens = kwargs['applyEvens']
+
+        self.applyLows = False
+        if 'applyLows' in kwargs:
+            self.applyLows = kwargs['applyLows']
+
+        self.doSevenJumps = False
+        if 'doSevenJumps' in kwargs:
+            self.doSevenJumps = kwargs['doSevenJumps']
+
     def _getDrawSum(self, inDraw):
         return sum(inDraw)
 
     def _getNbEvens(self, inDraw):
         return len([n for n in inDraw if n%2 == 0])
+
+    def _getLows(self, inDraw):
+        return len([n for n in inDraw if n<=25])
+
+    def _getDigitSum(self, inDraw):
+        return sum([(n%10 + n/10) for n in inDraw])
 
     def _getSevenJumps(self, inDraw):
         nbSevenJumps = 0
@@ -91,10 +117,23 @@ class Output(object):
             outStr += '%s\n'%', '.join([str('%02d'%n) for n in sorted(winningDraw)])
             outStrDisp += '%s\n'%', '.join([str('%02d'%n) for n in sorted(winningDraw)])
             if self.logAnatomy:
-                outStrDisp += 'Sum : %s, ' % self._getDrawSum(winningDraw)
-                outStrDisp += 'Evens : %s\n' % self._getNbEvens(winningDraw)
-                outStrDisp += 'nbSeven Jumps : %s\n' % self._getSevenJumps(winningDraw)
-                outStrDisp += 'Forced Numbers : %s\n' % self._getForcedNumbersInDraw(winningDraw)
+                if self.applyDrawSum:
+                    outStrDisp += 'Sum : %s\n' % self._getDrawSum(winningDraw)
+
+                if self.applyEvens:
+                    outStrDisp += 'Evens : %s\n' % self._getNbEvens(winningDraw)
+
+                if self.doSevenJumps:
+                    outStrDisp += 'nbSeven Jumps : %s\n' % self._getSevenJumps(winningDraw)
+
+                if self.forcedNumbers:
+                    outStrDisp += 'Forced Numbers : %s\n' % self._getForcedNumbersInDraw(winningDraw)
+
+                if self.applyDigitSum:
+                    outStrDisp += 'Digit Sum : %s\n' % self._getDigitSum(winningDraw)
+
+                if self.applyLows:
+                    outStrDisp += 'nb Lows : %s\n' % self._getLows(winningDraw)
 
                 if self.isMax:
                     outStr += '-' * nbDashes
@@ -102,7 +141,6 @@ class Output(object):
 
                     outStrDisp += '-' * (nbDashes + 10)
                     outStrDisp += '\n'
-
 
             if index%self.rowsInATicket == (self.rowsInATicket - 1):
                 outStr += '-' * nbDashes
