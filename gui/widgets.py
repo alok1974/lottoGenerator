@@ -431,8 +431,8 @@ class RulesWidget(QtGui.QDialog):
         self._grid.addWidget(self._hLineMap[2], 5, 0)
 
         self._hlayout = QtGui.QHBoxLayout()
-        self._hlayout.addWidget(self._okBtn)
         self._hlayout.addWidget(self._defaultsBtn)
+        self._hlayout.addWidget(self._okBtn)
 
         self._grid.addLayout(self._hlayout, 6, 0)
 
