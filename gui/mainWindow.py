@@ -78,7 +78,6 @@ class RunAlgTask(QtCore.QThread):
 
     # This run method is called by Qt as a result of calling start()
     def run(self):
-        self.stopping = False
         ma = MainAlgorithm(
                             qThread             = self                     ,
                             lottoIsMax          = self.lottoIsMax          ,
@@ -390,19 +389,18 @@ class MainWidget(MainWidgetUI):
         self.pw.show()
 
         # Signals that will be emitted from Algorithm to udpate progress
-        self.connect(self.rat, QtCore.SIGNAL("update(int)"), self.informOfUpdate)
-        self.connect(self.rat, QtCore.SIGNAL("finished()"), self.informOfFinished)
-        self.connect(self.rat, QtCore.SIGNAL("ranOutofLoops()"), self.informOfRanOutOfLoops)
+        self.connect(self.rat, QtCore.SIGNAL("update(int)"), self._informOfUpdate)
+        self.connect(self.rat, QtCore.SIGNAL("finished()"), self._informOfFinished)
+        self.connect(self.rat, QtCore.SIGNAL("ranOutofLoops()"), self._informOfRanOutOfLoops)
 
     # Method called asynchronously by thread when progress should be updated
-    def informOfUpdate(self, iterations):
+    def _informOfUpdate(self, iterations):
         self.pw._update(iterations)
         self._iter = iterations
 
     # Method called asynchronously by thread when it has finished
-    def informOfFinished(self):
+    def _informOfFinished(self):
         self._end = time.time()
-
         self._displayTextEdit.clear()
 
         s = ''
@@ -440,7 +438,7 @@ class MainWidget(MainWidgetUI):
         self.pw.closeWindow()
 
     # Method called asynchronously bythread when it maximum loops have reached
-    def informOfRanOutOfLoops(self):
+    def _informOfRanOutOfLoops(self):
         self.pw.closeWindow()
 
     def _resetBtnOnClicked(self):

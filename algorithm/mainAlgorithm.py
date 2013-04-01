@@ -32,10 +32,6 @@ from randomGenerator import WeightedRandomGenerator
 from  output import Output
 from PyQt4 import QtCore, QtGui
 
-sys.path.append(r'C:\Dropbox\git\lottoGenerator')
-
-from gui.logger import Logger
-
 class MainAlgorithm(Settings):
     def __init__(self, qThread=None, * args, **kwargs):
         super(MainAlgorithm, self).__init__(*args, **kwargs)

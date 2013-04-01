@@ -45,12 +45,12 @@ class ProgressWidget(QtGui.QDialog):
     def _initUI(self):
         self.pic = QtGui.QLabel(self)
         self.pic.setGeometry(0, 0, 200, 100)
-        self. pic.setPixmap(QtGui.QPixmap(os.path.join(ROOT_DIR, 'icons', '1.png')))
+        self. pic.setPixmap(QtGui.QPixmap(os.path.abspath(os.path.join(ROOT_DIR, 'icons', 'pbar', '1.png'))))
         self.setWindowTitle('Generating Draw')
 
     def _update(self, iter):
         iter = ((iter/ 100)%31) + 1
-        self. pic.setPixmap(QtGui.QPixmap(os.path.join(ROOT_DIR, 'icons', '%s.png' % iter)))
+        self. pic.setPixmap(QtGui.QPixmap(os.path.abspath(os.path.join(ROOT_DIR, 'icons', 'pbar', '%s.png' % iter))))
 
     def closeWindow(self):
         self._closedByProcess = True
