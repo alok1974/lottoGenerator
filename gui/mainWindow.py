@@ -124,6 +124,8 @@ class MainWidget(MainWidgetUI):
         self._logAnatomy = True
         self._logSettings = False
         self._iter = 0
+        self._start = 0
+        self._end = 0
 
         self._settings = {
                             'drsmMin': DEF_SETTING['drsmMin'][int(self._isLottoMax)],
@@ -379,6 +381,8 @@ class MainWidget(MainWidgetUI):
                     'nbEvens'             :  self._settings['nbEvens'],
                     'nbLows'              :  self._settings['nbLows'],
                  }
+
+        self._start = time.time()
         self.rat = RunAlgTask(**kwargs)
         self.rat.runRat()
 
@@ -397,10 +401,13 @@ class MainWidget(MainWidgetUI):
 
     # Method called asynchronously by thread when it has finished
     def informOfFinished(self):
+        self._end = time.time()
+
         self._displayTextEdit.clear()
 
         s = ''
         s += 'Total Iterations : %s \n\n' % self._iter
+        s += 'Total Running Time : %s (secs)\n\n' % round((self._end - self._start), 2)
 
         if self._logSettings:
             s += 'Using following settings: \n\n'
@@ -434,8 +441,6 @@ class MainWidget(MainWidgetUI):
 
     # Method called asynchronously bythread when it maximum loops have reached
     def informOfRanOutOfLoops(self):
-        self._displayTextEdit.clear()
-        self._displayTextEdit.setText(self.rat.result)
         self.pw.closeWindow()
 
     def _resetBtnOnClicked(self):
