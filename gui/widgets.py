@@ -21,13 +21,44 @@
 ###########################################################################################
 ###########################################################################################
 
+import os
+import sys
 import functools
 from PyQt4 import QtCore, QtGui
 from logger import Logger
 
 from styleSheet import StyleSheet
 
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)), '..'))
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+
 from gui import *
+
+class ProgressWidget(QtGui.QDialog):
+    def __init__(self, *args, **kwargs):
+        super(ProgressWidget, self).__init__(*args, **kwargs)
+        self.setModal(True)
+        self._closedByProcess = False
+        self._initUI()
+
+    def _initUI(self):
+        self.pic = QtGui.QLabel(self)
+        self.pic.setGeometry(0, 0, 200, 100)
+        self. pic.setPixmap(QtGui.QPixmap(os.path.join(ROOT_DIR, 'icons', '1.png')))
+        self.setWindowTitle('Generating Draw')
+
+    def _update(self, iter):
+        iter = ((iter/ 100)%31) + 1
+        self. pic.setPixmap(QtGui.QPixmap(os.path.join(ROOT_DIR, 'icons', '%s.png' % iter)))
+
+    def closeWindow(self):
+        self._closedByProcess = True
+        self.close()
+
+    def closeEvent(self, event):
+        if not self._closedByProcess:
+            event.ignore()
 
 class SettingsWidget(QtGui.QDialog):
     def __init__(self, isLottoMax=False, settings=[], *args, **kwargs):
@@ -154,6 +185,7 @@ class SettingsWidget(QtGui.QDialog):
         # Column 01
         self._grid.addWidget(self._hLineMap[1], 0, 0)
         self._grid.addWidget(self._drawSumLabel, 1, 0)
+
 
         self._hLayout01 = QtGui.QHBoxLayout()
         self._hLayout01.addWidget(self._drawSumMinLabel)

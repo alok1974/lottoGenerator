@@ -67,7 +67,7 @@ class Settings(object):
         if 'nbTickets' in kwargs:
             self.nbTickets = kwargs['nbTickets']
 
-        self.write = True
+        self.write = False
         if 'write' in kwargs:
             self.write = kwargs['write']
 
@@ -128,13 +128,35 @@ class Settings(object):
 
         self.applyEvens = True
         if 'applyEvens' in kwargs:
-            self.applyEvens = kwargs['applyDigitSum']
+            self.applyEvens = kwargs['applyEvens']
 
         self.applyLows = False
         if 'applyLows' in kwargs:
             self.applyLows = kwargs['applyLows']
 
+        self.drsmMin = 150
+        if 'drawSumMin' in kwargs:
+            self.drsmMin = kwargs['drawSumMin']
 
+        self.drsmMax = 170
+        if 'drawSumMax' in kwargs:
+            self.drsmMax = kwargs['drawSumMax']
+
+        self.dgsmMin = 38
+        if 'digitSumMin' in kwargs:
+            self.dgsmMin = kwargs['digitSumMin']
+
+        self.dgsmMax = 72
+        if 'digitSumMax' in kwargs:
+            self.dgsmMax = kwargs['digitSumMax']
+
+        self.evens = [3]
+        if 'nbEvens' in kwargs:
+            self.evens = kwargs['nbEvens']
+
+        self.lows = [3]
+        if 'nbLows' in kwargs:
+            self.lows = kwargs['nbLows']
 
     def _assertData(self):
         if self.forcedNumbers != [] and self.nbFromForcedRandom == 0:

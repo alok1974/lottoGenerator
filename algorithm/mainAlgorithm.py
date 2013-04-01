@@ -22,6 +22,7 @@
 ###########################################################################################
 
 import os
+import sys
 import time
 import random
 
@@ -29,10 +30,14 @@ from settings import Settings
 from scrap import ScrapLottoData
 from randomGenerator import WeightedRandomGenerator
 from  output import Output
+from PyQt4 import QtCore, QtGui
 
+sys.path.append(r'C:\Dropbox\git\lottoGenerator')
+
+from gui.logger import Logger
 
 class MainAlgorithm(Settings):
-    def __init__(self, * args, **kwargs):
+    def __init__(self, qThread=None, * args, **kwargs):
         super(MainAlgorithm, self).__init__(*args, **kwargs)
         self.sm = None
         self.dsm = None
@@ -41,6 +46,7 @@ class MainAlgorithm(Settings):
         self.validation = False
         self.gen = None
         self.nbSevenJumps = 0
+        self.qThread = qThread
 
     def _getDraw(self, wr):
         winningDraw = []
@@ -104,14 +110,12 @@ class MainAlgorithm(Settings):
         self.nbSevenJumps = self._getSevenJumps(self.winningDraw)
 
     def _validateDraw(self):
-        op = not self.isMax
-        rules = self.rules
-        SR_S = rules['SR_S'][op]
-        SR_E = rules['SR_E'][op]
-        DSR_S = rules['DSR_S'][op]
-        DSR_E = rules['DSR_E'][op]
-        NB_EVENS = rules['NB_EVENS'][op]
-        NB_LOWS = rules['NB_LOWS'][op]
+        SR_S = self.drsmMax
+        SR_E = self.drsmMax
+        DSR_S = self.dgsmMin
+        DSR_E = self.dgsmMax
+        NB_EVENS = self.evens
+        NB_LOWS = self.lows
 
         self._setDrawAnatomy()
 
@@ -132,19 +136,33 @@ class MainAlgorithm(Settings):
         wr = WeightedRandomGenerator(lottoData)
 
         allGen = []
+        ctr = 0
+        mainCtr = 0
         for k in range(self.nbWinningDraw):
             self.validation = False
             self.winningDraw = None
             while not self.validation:
+                if ctr > 100000:
+                    if self.qThread:
+                        self.qThread.emit(QtCore.SIGNAL("ranOutofLoops()"))
+                    return 'Could not generate draw !!'
                 self.winningDraw = self._getDraw(wr)
                 self._validateDraw()
+                if self.qThread:
+                    self.qThread.emit(QtCore.SIGNAL("update(int)"), mainCtr)
+                ctr += 1
+                mainCtr += 1
 
             self.validation = False
+            ctr = 0
 
             if self.winningDraw not in allGen:
                 allGen.append(self.winningDraw)
 
         self.gen = allGen
+
+        if self.qThread:
+            self.qThread.emit(QtCore.SIGNAL("finished()"))
 
         return self.output()
 

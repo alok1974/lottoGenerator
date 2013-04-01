@@ -23,6 +23,7 @@
 
 import os
 import sys
+import time
 import urllib2
 import functools
 from Tkinter import Tk
@@ -46,6 +47,63 @@ LOTTO_TYPE = ['Lotto 649', 'Lotto MAX']
 MAX_NUMBERS = (6, 7)
 OUT_FOLDER = 'output'
 
+# Separate worker thread for Running Algorithm
+class RunAlgTask(QtCore.QThread):
+    def __init__(self, parent=None, *args, **kwargs):
+        QtCore.QThread.__init__(self, parent)
+        self.result = ''
+        self.lottoIsMax          =  kwargs['lottoIsMax']
+        self.writeDirPath        =  kwargs['writeDirPath']
+        self.write               =  kwargs['write']
+        self.scrapType           =  kwargs['scrapType']
+        self.logAnatomy          =  kwargs['logAnatomy']
+        self.nbTickets           =  kwargs['nbTickets']
+        self.doSevenJumps        =  kwargs['doSevenJumps']
+        self.forcedNumbers       =  kwargs['forcedNumbers']
+        self.nbFromForcedRandom  =  kwargs['nbFromForcedRandom']
+        self.applyDrawSum        =  kwargs['applyDrawSum']
+        self.applyDigitSum       =  kwargs['applyDigitSum']
+        self.applyEvens          =  kwargs['applyEvens']
+        self.applyLows           =  kwargs['applyLows']
+        self.drawSumMin          =  kwargs['drawSumMin']
+        self.drawSumMax          =  kwargs['drawSumMax']
+        self.digitSumMin         =  kwargs['digitSumMin']
+        self.digitSumMax         =  kwargs['digitSumMax']
+        self.nbEvens             =  kwargs['nbEvens']
+        self.nbLows              =  kwargs['nbLows']
+
+    # Call this to launch the thread
+    def runRat(self):
+        self.start()
+
+    # This run method is called by Qt as a result of calling start()
+    def run(self):
+        self.stopping = False
+        ma = MainAlgorithm(
+                            qThread             = self                     ,
+                            lottoIsMax          = self.lottoIsMax          ,
+                            writeDirPath        = self.writeDirPath        ,
+                            write               = self.write               ,
+                            scrapType           = self.scrapType           ,
+                            logAnatomy          = self.logAnatomy          ,
+                            nbTickets           = self.nbTickets           ,
+                            doSevenJumps        = self.doSevenJumps        ,
+                            forcedNumbers       = self.forcedNumbers       ,
+                            nbFromForcedRandom  = self.nbFromForcedRandom  ,
+                            applyDrawSum        = self.applyDrawSum        ,
+                            applyDigitSum       = self.applyDigitSum       ,
+                            applyEvens          = self.applyEvens          ,
+                            applyLows           = self.applyLows           ,
+                            drawSumMin          = self.drawSumMin          ,
+                            drawSumMax          = self.drawSumMax          ,
+                            digitSumMin         = self.digitSumMin         ,
+                            digitSumMax         = self.digitSumMax         ,
+                            nbEvens             = self.nbEvens             ,
+                            nbLows              = self.nbLows              ,
+                        )
+
+        self.result = ma.runAlg()
+
 class MainWidget(MainWidgetUI):
     def __init__(self, *args, **kwargs):
         super(MainWidget, self).__init__(*args, **kwargs)
@@ -65,7 +123,7 @@ class MainWidget(MainWidgetUI):
         self._nbFromForced = 0
         self._logAnatomy = True
         self._logSettings = False
-
+        self._iter = 0
 
         self._settings = {
                             'drsmMin': DEF_SETTING['drsmMin'][int(self._isLottoMax)],
@@ -296,10 +354,57 @@ class MainWidget(MainWidgetUI):
             msgHandler._pop(self, 3)
             return
 
+        self._displayTextEdit.clear()
+        self._displayTextEdit.setText('Processing Draw . . .')
+        QtGui.QApplication.processEvents()
+
+        kwargs = {
+                    'lottoIsMax'          :  self._isLottoMax,
+                    'writeDirPath'        :  self._outDir,
+                    'write'               :  bool(self._outDir),
+                    'scrapType'           :  self._scrapType,
+                    'logAnatomy'          :  self._logAnatomy,
+                    'nbTickets'           :  self._nbTickets,
+                    'doSevenJumps'        :  self._doSevenJumps,
+                    'forcedNumbers'       :  self._forcedNumbers,
+                    'nbFromForcedRandom'  :  self._nbFromForced,
+                    'applyDrawSum'        :  self._rules['drsmRule'],
+                    'applyDigitSum'       :  self._rules['dgsmRule'],
+                    'applyEvens'          :  self._rules['evensRule'],
+                    'applyLows'           :  self._rules['lowsRule'],
+                    'drawSumMin'          :  self._settings['drsmMin'],
+                    'drawSumMax'          :  self._settings['drsmMax'],
+                    'digitSumMin'         :  self._settings['dgsmMin'],
+                    'digitSumMax'         :  self._settings['dgsmMax'],
+                    'nbEvens'             :  self._settings['nbEvens'],
+                    'nbLows'              :  self._settings['nbLows'],
+                 }
+        self.rat = RunAlgTask(**kwargs)
+        self.rat.runRat()
+
+        self.pw = ProgressWidget()
+        self.pw.show()
+
+        # Signals that will be emitted from Algorithm to udpate progress
+        self.connect(self.rat, QtCore.SIGNAL("update(int)"), self.informOfUpdate)
+        self.connect(self.rat, QtCore.SIGNAL("finished()"), self.informOfFinished)
+        self.connect(self.rat, QtCore.SIGNAL("ranOutofLoops()"), self.informOfRanOutOfLoops)
+
+    # Method called asynchronously by thread when progress should be updated
+    def informOfUpdate(self, iterations):
+        self.pw._update(iterations)
+        self._iter = iterations
+
+    # Method called asynchronously by thread when it has finished
+    def informOfFinished(self):
+        self._displayTextEdit.clear()
+
         s = ''
+        s += 'Total Iterations : %s \n\n' % self._iter
+
         if self._logSettings:
-            s += 'Generating Results with following settings: \n\n'
-            s += '*' * 30
+            s += 'Using following settings: \n\n'
+            s += '*' * 20
             s += '\n'
             s += 'Is Lotto Max: %s\n' % self._isLottoMax
             s += 'Nb Tickets: %s\n' % self._nbTickets
@@ -317,33 +422,21 @@ class MainWidget(MainWidgetUI):
             s += 'Digit Sum Rule: %s\n' % self._rules['dgsmRule']
             s += 'Even/Odd Rule: %s\n' % self._rules['evensRule']
             s += 'Low/High Rule: %s\n\n' % self._rules['lowsRule']
-            s += '*' * 30
+            s += '*' * 10
             s += '\n'
             s += 'Results\n'
-            s += '*' * 30
+            s += '*' * 10
             s += '\n\n\n'
 
-        write = bool(self._outDir)
-
-        ma = MainAlgorithm(lottoIsMax=self._isLottoMax,
-                           writeDirPath=self._outDir,
-                           write=write,
-                           scrapType=self._scrapType,
-                           logAnatomy=self._logAnatomy,
-                           nbTickets=self._nbTickets,
-                           doSevenJumps=self._doSevenJumps,
-                           forcedNumbers=self._forcedNumbers,
-                           nbFromForcedRandom=self._nbFromForced,
-                           applyDrawSum=self._rules['drsmRule'],
-                           applyDigitSum=self._rules['dgsmRule'],
-                           applyEvens=self._rules['evensRule'],
-                           applyLows=self._rules['lowsRule'])
-
-        s += ma.runAlg()
-
-        self._displayTextEdit.clear()
-
+        s += self.rat.result
         self._displayTextEdit.setText(s)
+        self.pw.closeWindow()
+
+    # Method called asynchronously bythread when it maximum loops have reached
+    def informOfRanOutOfLoops(self):
+        self._displayTextEdit.clear()
+        self._displayTextEdit.setText(self.rat.result)
+        self.pw.closeWindow()
 
     def _resetBtnOnClicked(self):
         self._noNumberCheckBox.setCheckState(2)
