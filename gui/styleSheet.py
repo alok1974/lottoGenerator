@@ -40,7 +40,7 @@ class StyleSheet(object):
 
     def _createPrefs(self):
         with open(self.prefFile, 'w') as f:
-            f.write('theme:')
+            f.write('theme:dark')
 
     def _readPrefs(self):
         if not os.path.exists(self.prefFile):
