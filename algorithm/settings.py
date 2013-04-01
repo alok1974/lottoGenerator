@@ -22,31 +22,25 @@
 ###########################################################################################
 
 import os
+import sys
 import inspect
 
 URL_LOTTO_649 = r"http://diffusion.loto-quebec.com/sw3/stats/asp/stats.asp?cProduit=4&pRequest=3&l=1"
 URL_LOTTO_MAX = r"http://diffusion.loto-quebec.com/sw3/stats/asp/stats.asp?cProduit=38&pRequest=3&l=1"
 URL_QUEBEC_649 = r"http://diffusion.loto-quebec.com/sw3/stats/asp/stats.asp?cProduit=5&pRequest=3&l=1"
 
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.join(__file__)), '..'))
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+
+from gui import DEF_SETTING
+
 class Settings(object):
     def __init__(self, * args, **kwargs):
         # Call order of methods should be maintained
         self._setUserVariables(**kwargs)
-        self._setRules()
         self._setDefaults()
         self._assertData()
-
-
-    def _setRules(self):
-        # Rules for Algorithm Processes
-        # first value for lotto max next value for lotto 649
-        self.rules = {'SR_S': (140, 125),
-                      'SR_E': (210, 170),
-                      'DSR_S': (38, 38),
-                      'DSR_E': (60, 60),
-                      'NB_EVENS': ([5, 4, 3], [2, 3, 4]),
-                      'NB_LOWS': ([4], [3]),
-                      }
 
     def _setDefaults(self):
         # Default Variables for Lotto
@@ -81,7 +75,7 @@ class Settings(object):
 
                 self.writeDirPath = userPath
 
-        self.maxLoops = 1
+        self.maxLoops = DEF_SETTING['maxLoops']
         if 'maxLoops' in kwargs:
             self.maxLoops = kwargs['maxLoops']
 
@@ -134,27 +128,27 @@ class Settings(object):
         if 'applyLows' in kwargs:
             self.applyLows = kwargs['applyLows']
 
-        self.drsmMin = 150
+        self.drsmMin = DEF_SETTING['drsmMin'][int(self.isMax)]
         if 'drawSumMin' in kwargs:
             self.drsmMin = kwargs['drawSumMin']
 
-        self.drsmMax = 170
+        self.drsmMax = DEF_SETTING['drsmMax'][int(self.isMax)]
         if 'drawSumMax' in kwargs:
             self.drsmMax = kwargs['drawSumMax']
 
-        self.dgsmMin = 38
+        self.dgsmMin = DEF_SETTING['dgsmMin'][int(self.isMax)]
         if 'digitSumMin' in kwargs:
             self.dgsmMin = kwargs['digitSumMin']
 
-        self.dgsmMax = 72
+        self.dgsmMax = DEF_SETTING['dgsmMax'][int(self.isMax)]
         if 'digitSumMax' in kwargs:
             self.dgsmMax = kwargs['digitSumMax']
 
-        self.evens = [3]
+        self.evens = DEF_SETTING['nbEvens'][int(self.isMax)]
         if 'nbEvens' in kwargs:
             self.evens = kwargs['nbEvens']
 
-        self.lows = [3]
+        self.lows = DEF_SETTING['nbLows'][int(self.isMax)]
         if 'nbLows' in kwargs:
             self.lows = kwargs['nbLows']
 

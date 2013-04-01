@@ -36,6 +36,7 @@ DEF_SETTING = {
                 'dgsmMax' : (60, 60),
                 'nbEvens' : ([2, 3, 4], [3, 4, 5]),
                 'nbLows' : ([3], [4]),
+                'maxLoops': 100000,
               }
 
 

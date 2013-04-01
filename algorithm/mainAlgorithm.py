@@ -138,7 +138,7 @@ class MainAlgorithm(Settings):
             self.validation = False
             self.winningDraw = None
             while not self.validation:
-                if ctr > 100000:
+                if ctr > self.maxLoops:
                     if self.qThread:
                         self.qThread.emit(QtCore.SIGNAL("ranOutofLoops()"))
                     return 'Could not generate draw !!'
