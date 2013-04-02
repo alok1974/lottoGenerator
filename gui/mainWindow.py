@@ -486,6 +486,9 @@ class MainWindow(QtGui.QMainWindow):
         loadAction = QtGui.QAction('&Load Settings', self)
         loadAction.triggered.connect(self._onLoadAction)
 
+        aboutAction = QtGui.QAction('&About', self)
+        aboutAction.triggered.connect(self._onAboutAction)
+
 
         menubar = self.menuBar()
 
@@ -495,10 +498,17 @@ class MainWindow(QtGui.QMainWindow):
         self._presetsMenu.addAction(saveAction)
         self._presetsMenu.addAction(loadAction)
 
+        menubar.addAction(aboutAction)
+
         StyleSheet().setColor(self._mainWidget)
         StyleSheet().setColor(self, app= QtCore.QCoreApplication.instance())
 
         self.move(50, 50)
+
+    def _onAboutAction(self):
+        ab = AboutWidget()
+        ab.show()
+        ab.exec_()
 
     def _onSaveAction(self):
         saveLocation = os.path.join(ROOT_DIR, 'settings', 'untitled.alg')

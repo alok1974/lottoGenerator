@@ -60,6 +60,19 @@ class ProgressWidget(QtGui.QDialog):
         if not self._closedByProcess:
             event.ignore()
 
+class AboutWidget(QtGui.QDialog):
+    def __init__(self, *args, **kwargs):
+        super(AboutWidget, self).__init__(*args, **kwargs)
+        self.setModal(True)
+        self._initUI()
+
+    def _initUI(self):
+        self.pic = QtGui.QLabel(self)
+        self.pic.setFixedSize(400, 200)
+        self. pic.setPixmap(QtGui.QPixmap(os.path.abspath(os.path.join(ROOT_DIR, 'icons', 'about.png'))))
+        self.setFixedSize(400, 200)
+        self.setWindowTitle('About')
+
 class SettingsWidget(QtGui.QDialog):
     def __init__(self, isLottoMax=False, settings=[], *args, **kwargs):
         super(SettingsWidget, self).__init__(*args, **kwargs)
