@@ -180,22 +180,22 @@ QHeaderView::up-arrow                           {image: url(FULLPATH/Up Arrow Bl
 QHeaderView:focus                               {border: 1px solid rgb(61,123,205);}
 
 
-QMenuBar, QMenu                                  {background: rgb(55, 55, 60);
-                                                 font-size: 11px;}
+QMenuBar, QMenu                                  {background: rgb(50, 45, 43);
+                                                 font-size: 16px;}
 
 QMenu::disabled                                 {background-color: solid black;
-                                                 color: rgb(80,80,80);
+                                                 color: rgb(50, 45, 43);
                                                  font-style: normal;}
 
-QMenu::item	                                    {background: rgb(40,40,40);
+QMenu::item	                                    {background: rgb(50, 45, 43);
                                                 color: rgb(40,40,40);
                                                 font-style: normal;
                                                 font-size: 11px;}
 
-QMenu::item:enabled	                            {background: rgb(40,40,40);
+QMenu::item:enabled	                            {background: rgb(50, 45, 43);
                                                  color: rgb(200,200,200)}
 
-QMenu::item:selected                            {background-color: rgb(40,40,40);
+QMenu::item:selected                            {background-color: rgb(50, 45, 43);
                                                 color: rgb(55,55,55)}
 
 QMenu::item:selected:enabled                     {background-color: rgb(61,123,205);
@@ -203,7 +203,7 @@ QMenu::item:selected:enabled                     {background-color: rgb(61,123,2
 
 QMenu::separator                                {background: rgb(75,75,75)}
 
-QMenuBar                                        {background: rgb(40,40,40);
+QMenuBar                                        {background: rgb(50, 45, 43);
                                                 color: rgb(200,200,200)}
 
 QMenuBar::disabled                              {

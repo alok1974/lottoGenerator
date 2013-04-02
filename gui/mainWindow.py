@@ -23,6 +23,7 @@
 
 import os
 import sys
+import json
 import time
 import urllib2
 import functools
@@ -474,10 +475,86 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setWindowTitle(TITLE)
 
+        self.statusBar()
+
+        resetAction = QtGui.QAction('&Reset Settings', self)
+        resetAction.triggered.connect(self._mainWidget._resetBtnOnClicked)
+
+        saveAction = QtGui.QAction('&Save Current Settings', self)
+        saveAction.triggered.connect(self._onSaveAction)
+
+        loadAction = QtGui.QAction('&Load Settings', self)
+        loadAction.triggered.connect(self._onLoadAction)
+
+
+        menubar = self.menuBar()
+
+        fileMenu = menubar.addMenu('&File')
+        self._presetsMenu = fileMenu.addMenu('&Lotto Settings')
+        self._presetsMenu.addAction(resetAction)
+        self._presetsMenu.addAction(saveAction)
+        self._presetsMenu.addAction(loadAction)
+
         StyleSheet().setColor(self._mainWidget)
         StyleSheet().setColor(self, app= QtCore.QCoreApplication.instance())
 
         self.move(50, 50)
+
+    def _onSaveAction(self):
+        saveLocation = os.path.join(ROOT_DIR, 'prefs', 'untitled.alg')
+
+        fg = QtGui.QFileDialog()
+
+        f = fg.getSaveFileName(self, "Save File",
+                            saveLocation,
+                            "Alok's Lotto Generator (*.alg)")
+
+        if not f:
+            return
+
+        settings = self._getSettings()
+
+        with open(f, 'wb') as file:
+            json.dump(settings, file, sort_keys=True, indent=4)
+
+        Logger.info(f)
+
+    def _getSettings(self):
+        d = {}
+
+        w = self._mainWidget
+
+        d['isMax'] = w._isLottoMax
+        d['forcedNumbers'] = w._forcedNumbers
+        d['outDir'] = w._outDir
+        d['doSevenJumps'] = w._doSevenJumps
+        d['scrapType'] = w._scrapType
+        d['nbFromForced'] = w._nbFromForced
+        d['logAnatomy'] = w._logAnatomy
+        d['logSettings'] = w._logSettings
+        d['drsmMin'] = w._settings['drsmMin']
+        d['drsmMax'] = w._settings['drsmMax']
+        d['dgsmMin'] = w._settings['dgsmMin']
+        d['dgsmMax'] = w._settings['dgsmMax']
+        d['drsmRule'] = w._rules['drsmRule']
+        d['dgsmRule'] = w._rules['dgsmRule']
+        d['evensRule'] = w._rules['evensRule']
+        d['lowsRule'] = w._rules['lowsRule']
+
+        return d
+
+    def _onLoadAction(self):
+        loadLocation = os.path.join(ROOT_DIR, 'prefs', 'untitled.alg')
+        fg = QtGui.QFileDialog()
+        f = str(fg.getOpenFileName(self, 'Open file', loadLocation, "Alok's Lotto Generator (*.alg)"))
+
+        if not f:
+            return
+
+        with open(f, 'rb') as file:
+            settings = json.load(file)
+
+        Logger.info(settings)
 
 def run():
     app = QtGui.QApplication(sys.argv)

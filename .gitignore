@@ -2,12 +2,11 @@
 
 *.komodoproject
 
-prefs/currStyle
-prefs/recentFiles
 alg/output
 src_psd/
 
 *.psd
+*.alg
 
 # C extensions
 *.so
