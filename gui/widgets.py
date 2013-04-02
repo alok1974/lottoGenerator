@@ -94,20 +94,21 @@ class LicenseWidget(QtGui.QDialog):
         self.textEdit.setReadOnly(True)
         self.textEdit.setAcceptRichText(True)
         self.textEdit.setText(self.text)
+        self.textEdit.setStyleSheet("QTextEdit {background-color : \
+                                              rgb(97, 91, 83); color : \
+                                              rgb(15, 15, 15);}")
+
 
         self.okBtn = QtGui.QPushButton('Ok')
         self.okBtn.setMinimumSize(80, 25)
-
+        self.okBtn.setStyleSheet("QPushButton {background-color :\
+                                             rgb(89, 65, 62);}")
         # Add Layout
         self._vLayout = QtGui.QVBoxLayout()
-        self._hLayout = QtGui.QHBoxLayout()
-        self._hLayout.addStretch(1)
 
         # Add Widgets to Layouts
-        self._hLayout.addWidget(self.okBtn)
-
         self._vLayout.addWidget(self.textEdit)
-        self._vLayout.addLayout(self._hLayout)
+        self._vLayout.addWidget(self.okBtn)
 
         self.setGeometry(300, 100, 400, 300)
 

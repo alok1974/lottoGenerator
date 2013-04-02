@@ -43,6 +43,12 @@ import msgHandler
 from logger import Logger
 from algorithm.mainAlgorithm import MainAlgorithm
 
+# Setting the icon for the task bar in windows
+if sys.platform.startswith('win'):
+    import ctypes
+    myappid = 'alokslottogenerator.1.0' # arbitrary string
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
 TITLE = "Alok's Lotto Generator"
 LOTTO_TYPE = ['Lotto 649', 'Lotto MAX']
 MAX_NUMBERS = (6, 7)
@@ -583,6 +589,8 @@ class MainWindow(QtGui.QMainWindow):
 def run():
     app = QtGui.QApplication(sys.argv)
     am = MainWindow()
+    ico = os.path.join(ROOT_DIR, 'icons', 'logo_a_small.ico')
+    app.setWindowIcon(QtGui.QIcon(ico))
     am.show()
     am.raise_()
     app.exec_()
