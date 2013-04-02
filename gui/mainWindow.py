@@ -501,7 +501,7 @@ class MainWindow(QtGui.QMainWindow):
         self.move(50, 50)
 
     def _onSaveAction(self):
-        saveLocation = os.path.join(ROOT_DIR, 'prefs', 'untitled.alg')
+        saveLocation = os.path.join(ROOT_DIR, 'settings', 'untitled.alg')
 
         fg = QtGui.QFileDialog()
 
@@ -544,7 +544,7 @@ class MainWindow(QtGui.QMainWindow):
         return d
 
     def _onLoadAction(self):
-        loadLocation = os.path.join(ROOT_DIR, 'prefs', 'untitled.alg')
+        loadLocation = os.path.join(ROOT_DIR, 'settings', 'untitled.alg')
         fg = QtGui.QFileDialog()
         f = str(fg.getOpenFileName(self, 'Open file', loadLocation, "Alok's Lotto Generator (*.alg)"))
 
