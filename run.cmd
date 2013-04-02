@@ -1,1 +1,1 @@
-C:\Python26\python.exe run.py
+run.pyw
