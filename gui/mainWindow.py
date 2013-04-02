@@ -489,6 +489,9 @@ class MainWindow(QtGui.QMainWindow):
         aboutAction = QtGui.QAction('&About', self)
         aboutAction.triggered.connect(self._onAboutAction)
 
+        licenseAction = QtGui.QAction('&License', self)
+        licenseAction.triggered.connect(self._onLicenseAction)
+
 
         menubar = self.menuBar()
 
@@ -499,6 +502,7 @@ class MainWindow(QtGui.QMainWindow):
         self._presetsMenu.addAction(loadAction)
 
         menubar.addAction(aboutAction)
+        menubar.addAction(licenseAction)
 
         StyleSheet().setColor(self._mainWidget)
         StyleSheet().setColor(self, app= QtCore.QCoreApplication.instance())
@@ -509,6 +513,16 @@ class MainWindow(QtGui.QMainWindow):
         ab = AboutWidget()
         ab.show()
         ab.exec_()
+
+    def _onLicenseAction(self):
+        s = ''
+        f = os.path.abspath(os.path.join(ROOT_DIR, 'license', 'license.txt'))
+        with open(f, 'rb') as file:
+            s += file.read()
+
+        lw = LicenseWidget(text=s)
+        lw.show()
+        lw.exec_()
 
     def _onSaveAction(self):
         saveLocation = os.path.join(ROOT_DIR, 'settings', 'untitled.alg')

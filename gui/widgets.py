@@ -73,6 +73,55 @@ class AboutWidget(QtGui.QDialog):
         self.setFixedSize(400, 200)
         self.setWindowTitle('About')
 
+class LicenseWidget(QtGui.QDialog):
+    def __init__(self, text='', *args, **kwargs):
+        super(LicenseWidget, self).__init__(*args, **kwargs)
+        self.setModal(True)
+
+        self.text = text
+
+        # Set UI
+        self._initUI()
+
+        StyleSheet().setColor(self)
+
+        # Connect Signals
+        self._connectSignals()
+
+    def _initUI(self):
+        # Add Widgets
+        self.textEdit = QtGui.QTextEdit()
+        self.textEdit.setReadOnly(True)
+        self.textEdit.setAcceptRichText(True)
+        self.textEdit.setText(self.text)
+
+        self.okBtn = QtGui.QPushButton('Ok')
+        self.okBtn.setMinimumSize(80, 25)
+
+        # Add Layout
+        self._vLayout = QtGui.QVBoxLayout()
+        self._hLayout = QtGui.QHBoxLayout()
+        self._hLayout.addStretch(1)
+
+        # Add Widgets to Layouts
+        self._hLayout.addWidget(self.okBtn)
+
+        self._vLayout.addWidget(self.textEdit)
+        self._vLayout.addLayout(self._hLayout)
+
+        self.setGeometry(300, 100, 400, 300)
+
+        self.setLayout(self._vLayout)
+
+        self.setWindowTitle('License Info')
+
+    def _connectSignals(self):
+        self.okBtn.clicked.connect(self._okBtnOnClicked)
+
+    def _okBtnOnClicked(self):
+        self.textEdit.sizeHint()
+        self.close()
+
 class SettingsWidget(QtGui.QDialog):
     def __init__(self, isLottoMax=False, settings=[], *args, **kwargs):
         super(SettingsWidget, self).__init__(*args, **kwargs)
