@@ -554,22 +554,25 @@ class MainWindow(QtGui.QMainWindow):
 
         w = self._mainWidget
 
-        d['isMax'] = w._isLottoMax
-        d['forcedNumbers'] = w._forcedNumbers
-        d['outDir'] = w._outDir
-        d['doSevenJumps'] = w._doSevenJumps
-        d['scrapType'] = w._scrapType
-        d['nbFromForced'] = w._nbFromForced
-        d['logAnatomy'] = w._logAnatomy
-        d['logSettings'] = w._logSettings
-        d['drsmMin'] = w._settings['drsmMin']
-        d['drsmMax'] = w._settings['drsmMax']
-        d['dgsmMin'] = w._settings['dgsmMin']
-        d['dgsmMax'] = w._settings['dgsmMax']
-        d['drsmRule'] = w._rules['drsmRule']
-        d['dgsmRule'] = w._rules['dgsmRule']
-        d['evensRule'] = w._rules['evensRule']
-        d['lowsRule'] = w._rules['lowsRule']
+        d['01:isMax'] = w._isLottoMax
+        d['02:nbTickets'] = w._nbTickets
+        d['03:outDir'] = w._outDir
+        d['04:scrapType'] = w._scrapType
+        d['05:doSevenJumps'] = w._doSevenJumps
+        d['06:logAnatomy'] = w._logAnatomy
+        d['07:logSettings'] = w._logSettings
+        d['08:drsmMin'] = w._settings['drsmMin']
+        d['09:drsmMax'] = w._settings['drsmMax']
+        d['10:dgsmMin'] = w._settings['dgsmMin']
+        d['11:dgsmMax'] = w._settings['dgsmMax']
+        d['12:nbEvens'] = w._settings['nbEvens']
+        d['13:nbLows'] = w._settings['nbLows']
+        d['14:drsmRule'] = w._rules['drsmRule']
+        d['15:dgsmRule'] = w._rules['dgsmRule']
+        d['16:evensRule'] = w._rules['evensRule']
+        d['17:lowsRule'] = w._rules['lowsRule']
+        d['18:forcedNumbers'] = w._forcedNumbers
+        d['19:nbFromForced'] = w._nbFromForced
 
         return d
 
@@ -581,10 +584,72 @@ class MainWindow(QtGui.QMainWindow):
         if not f:
             return
 
+        settings = {}
         with open(f, 'rb') as file:
             settings = json.load(file)
 
-        Logger.info(settings)
+        self._applySettings(settings=settings)
+
+    def _applySettings(self, settings={}):
+        if not settings:
+            return
+
+        w = self._mainWidget
+
+        w._isLottoMax = settings['01:isMax']
+        w._lottoTypeComboBox.setCurrentIndex(int(w._isLottoMax))
+
+        w._nbTickets = int(settings['02:nbTickets'])
+        w._nbTicketsSpinBox.setValue(w._nbTickets)
+
+        w._outDir = settings['03:outDir']
+        w._outPutDirLineEdit.setText(w._outDir)
+
+        w._scrapType = settings['04:scrapType']
+        for index, radioBtn in w._radioBtnMap.items():
+            if int(index)==w._scrapType:
+                radioBtn.setChecked(True)
+            else:
+                radioBtn.setChecked(False)
+
+        w._doSevenJumps = settings['05:doSevenJumps']
+        w._sevenJumpsCheckBox.setChecked(w._doSevenJumps)
+
+        w._logAnatomy = settings['06:logAnatomy']
+        w._logAnatomyCheckBox.setChecked(w._logAnatomy)
+
+        w._logSettings = settings['07:logSettings']
+        w._logSettingsCheckBox.setChecked(w._logSettings)
+
+        w._settings['drsmMin'] = settings['08:drsmMin']
+        w._settings['drsmMax'] = settings['09:drsmMax']
+        w._settings['dgsmMin'] = settings['10:dgsmMin']
+        w._settings['dgsmMax'] = settings['11:dgsmMax']
+        w._settings['nbEvens'] = settings['12:nbEvens']
+        w._settings['nbLows'] = settings['13:nbLows']
+
+        w._rules['drsmRule'] = settings['14:drsmRule']
+        w._rules['dgsmRule'] = settings['15:dgsmRule']
+        w._rules['evensRule'] = settings['16:evensRule']
+        w._rules['lowsRule'] = settings['17:lowsRule']
+
+        w._forcedNumbers = settings['18:forcedNumbers']
+        if not w._forcedNumbers:
+            w._noNumberCheckBox.setChecked(True)
+        else:
+            w._noNumberCheckBox.setChecked(False)
+
+        for index, checkBox in w._checkBoxMap.items():
+            if int(index) in w._forcedNumbers:
+                checkBox.setChecked(True)
+            else:
+                checkBox.setChecked(False)
+
+        w._updateForcedNumberLineEdit()
+
+        w._nbFromForced = settings['19:nbFromForced']
+        w._nbFromForcedSpinBox.setRange(0, len(w._forcedNumbers))
+        w._nbFromForcedSpinBox.setValue(w._nbFromForced)
 
 def run():
     app = QtGui.QApplication(sys.argv)
