@@ -35,6 +35,8 @@ if ROOT_DIR not in sys.path:
 
 from gui import *
 
+TEST_IMG = r'c:\users\alok.gandhi\desktop\test.png'
+
 class ProgressWidget(QtGui.QDialog):
     def __init__(self, *args, **kwargs):
         super(ProgressWidget, self).__init__(*args, **kwargs)
@@ -46,20 +48,31 @@ class ProgressWidget(QtGui.QDialog):
         self.pic = QtGui.QLabel(self)
         self.pic.setFixedSize(255, 250)
         self. pic.setPixmap(QtGui.QPixmap(os.path.abspath(os.path.join(ROOT_DIR, 'icons', 'pbar', '1.png'))))
+        #self. pic.setPixmap(QtGui.QPixmap(TEST_IMG))
         self.setFixedSize(255, 250)
+
+        self.lcd = QtGui.QLCDNumber(self)
+        self.lcd.setDigitCount(6)
+        self.lcd.display('000000')
+        self.lcd.move(92, 147)
+        self.lcd.setSegmentStyle(QtGui.QLCDNumber.Flat)
+        self.lcd.setFrameStyle(QtGui.QFrame.NoFrame)
+
         self.setWindowTitle('Generating Draw')
 
     def _update(self, iter):
-        iter = ((iter/ 100)%20) + 1
-        self. pic.setPixmap(QtGui.QPixmap(os.path.abspath(os.path.join(ROOT_DIR, 'icons', 'pbar', '%s.png' % iter))))
+        self.lcd.display('%s' % str(iter).zfill(6))
+
+        imgNumber = ((iter/ 100)%20) + 1
+        self. pic.setPixmap(QtGui.QPixmap(os.path.abspath(os.path.join(ROOT_DIR, 'icons', 'pbar', '%s.png' % imgNumber))))
 
     def closeWindow(self):
         self._closedByProcess = True
         self.close()
-
-    def closeEvent(self, event):
-        if not self._closedByProcess:
-            event.ignore()
+    #
+    #def closeEvent(self, event):
+    #    if not self._closedByProcess:
+    #        event.ignore()
 
 class AboutWidget(QtGui.QDialog):
     def __init__(self, *args, **kwargs):
@@ -788,3 +801,10 @@ class MainWidgetUI(QtGui.QWidget):
 
         self._mainLayout = QtGui.QVBoxLayout(self)
         self._mainLayout.addLayout(self._grid)
+
+if __name__ == '__main__':
+    app = QtGui.QApplication(sys.argv)
+    pw = ProgressWidget()
+    pw.show()
+    pw.raise_()
+    app.exec_()
