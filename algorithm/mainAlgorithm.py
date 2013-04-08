@@ -106,7 +106,7 @@ class MainAlgorithm(Settings):
         self.nbSevenJumps = self._getSevenJumps(self.winningDraw)
 
     def _validateDraw(self):
-        SR_S = self.drsmMax
+        SR_S = self.drsmMin
         SR_E = self.drsmMax
         DSR_S = self.dgsmMin
         DSR_E = self.dgsmMax
