@@ -513,7 +513,7 @@ class MainWindow(QtGui.QMainWindow):
         StyleSheet().setColor(self._mainWidget)
         StyleSheet().setColor(self, app= QtCore.QCoreApplication.instance())
 
-        self.move(50, 50)
+        self.move(50, 10)
 
     def _onAboutAction(self):
         ab = AboutWidget()
