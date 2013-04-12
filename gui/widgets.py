@@ -69,10 +69,10 @@ class ProgressWidget(QtGui.QDialog):
     def closeWindow(self):
         self._closedByProcess = True
         self.close()
-    #
-    #def closeEvent(self, event):
-    #    if not self._closedByProcess:
-    #        event.ignore()
+    
+    def closeEvent(self, event):
+        if not self._closedByProcess:
+            event.ignore()
 
 class AboutWidget(QtGui.QDialog):
     def __init__(self, *args, **kwargs):
