@@ -9,7 +9,9 @@ One cool feature of the algorithm is that it does screen scrapping of the Lotto 
 Requires:
 
 python 2.6 or higher (can run with python 2.7 but not tested)
+
 pyQt4 (latest version avaialble)
+
 beautiful soup for python (latest version avaiable)
 
 
