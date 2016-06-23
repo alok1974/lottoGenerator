@@ -6,12 +6,12 @@ Alok's Lotto Generator is an application which generates Canada Lotto Tickets ba
 One cool feature of the algorithm is that it does screen scrapping of the Lotto Canada's web page to get the latest result and then use them in calculation. 
 
 
-Requires:
+**Requires:**
 
-python 2.6 or higher (can run with python 2.7 but not tested)
+- python 2.6+
 
-pyQt4 (latest version avaialble)
+- pyQt4 (latest version avaialble)
 
-beautiful soup for python (latest version avaiable)
+- beautiful soup for python (latest version avaiable)
 
 
